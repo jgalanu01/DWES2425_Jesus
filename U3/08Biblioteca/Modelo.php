@@ -72,6 +72,32 @@ class Modelo {
         return $resultado;
     }
 
+    public function obtenerSocios(){
+
+        //Devuelve un array vacio si no hay socios
+        //Si hay socios devuelve un array con objetos Socio
+        $resultado=array();
+
+        try{
+            $textoConsulta='SELECT * from socios';
+            //Ejecutar consulta
+            $c=$this->conexion->query($textoConsulta); //c de consulta
+            if($c){
+
+                //Acceder al resultado de la consulta
+                while($fila=$c->fetch()){ //El fetch va recorriendo fila a fila
+
+                }
+
+            }
+
+        } catch (\Throwable $th){
+            echo $th->getMessage();
+        }
+
+        return $resultado;
+    }
+
     /**
      * Get the value of conexion
      */ 

@@ -16,6 +16,52 @@ require_once 'controlador.php';
 <?php
 require_once 'Menu.php';
 ?>
+
+<div>
+    
+    <?php
+
+    if(isset($error)){
+        echo $error;
+    }
+
+    ?>
+
+
+</div>
+
+
+<div>
+    
+    <!-- ÁREA DE INSERT (SOLO ADMIN) -->
+    <?php
+
+    if($_SESSION['usuario']->getTIpo()=='A'){
+
+        //Obtenemos los socios
+        $socios=$bd->obtenerSocios();
+        
+    
+    ?>
+
+    <form action="" method="post">
+
+    <label for="socio">socio</label>
+    <select name="socio" id="socio">
+
+
+    </select>
+
+    
+
+
+    
+
+    </form>
+    <?php
+    }
+    ?>
+</div>
     
 </body>
 </html>
