@@ -1,5 +1,10 @@
 <?php
 require_once 'Modelo.php';
+session_start();
+if(isset($_SESSION['usuario'])){
+    //Redirigimos si ya estamos logueados
+    header('location:prestamos.php');
+}
 if(isset($_POST['entrar'])){
     $bd=new Modelo();
     if($bd->getConexion()==null){
@@ -7,12 +12,14 @@ if(isset($_POST['entrar'])){
     }
     else{
 
-        //Comprobar usuario y ps y si los datos son correctos, guardamos el usuario en una sesión y rediriimos a la pagina préstamos.php
+        //Comprobar usuario y ps y si los datos son correctos, guardamos el usuario en una sesión y redirigimos a la pagina préstamos.php
 
         $us=$bd->loguear($_POST['usuario'],$_POST['ps']);
         if($us!=null){
             //Almacenamos en la sesión
+            $_SESSION['usuario']=$us;
             //Redirigimos 
+            header('location:prestamos.php');
 
             $error='Datos correctos';
         }
