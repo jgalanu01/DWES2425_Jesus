@@ -19,5 +19,22 @@ if(isset($_POST['cerrar'])){
 
 $bd=new Modelo();
 
+if(isset($_POST['pCrear'])){  //Porque he pulsado en el crear de préstamo
+//Creamos un préstamo 
+//Usamos la función de la bd comprobarSiPrestar(pSocio int pLibro int) (está creado en la bd), para ver si se puede hacer el préstamo
+
+$resultado=$bd->comprobar($_POST['socio'],$_POST['libro']);
+
+if($resultado=='ok'){
+    //Hacer el préstamo
+
+    $error='Se puede prestar';
+
+}
+else{
+    $error = $resultado;
+}
+}
+
 
 ?>
