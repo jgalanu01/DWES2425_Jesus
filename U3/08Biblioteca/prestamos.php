@@ -20,9 +20,12 @@ require_once 'Menu.php';
 <div>
     
     <?php
+    if(isset($mensaje)){
+        echo '<div class="alert alert-success" role="alert">' . $mensaje . '</div>';
+    }
 
     if(isset($error)){
-        echo $error;
+        echo '<div class="alert alert-danger" role="alert">' . $error . '</div>';
     }
 
     ?>

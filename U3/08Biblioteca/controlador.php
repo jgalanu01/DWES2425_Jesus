@@ -26,15 +26,25 @@ if(isset($_POST['pCrear'])){  //Porque he pulsado en el crear de préstamo
 $resultado=$bd->comprobar($_POST['socio'],$_POST['libro']);
 
 if($resultado=='ok'){
-    //Hacer el préstamo
+    //Hacer el préstamo, habra que hacer un insert para añadir el préstamo y un update para decir que hay un libro menos en la biblitoeca, porque está prestado
+    $resultado= $bd->crearPrestamo($_POST['socio'],$_POST['libro']);
+    if($resultado=='ok'){
+        //Hacer el préstamo
+        
+        $numero=$bd->crearPrestamo($_POST['socio'],$_POST['libro']);
+        if($numero>0){
+            $mensaje='Préstamo nº'.$numero.'Registrado';
+        }else{
 
-    $error='Se puede prestar';
+        
+        $error='Se ha producido un error al crear el préstamo';
+        }
 
+    }
+
+
+    }else{
+        $error=$resultado;
+    }
 }
-else{
-    $error = $resultado;
-}
-}
-
-
 ?>
