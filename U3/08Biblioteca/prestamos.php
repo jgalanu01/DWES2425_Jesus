@@ -107,15 +107,17 @@ require_once 'controlador.php';
                         echo '<td>' . date('d/m/Y', strtotime($p->getFechaP())) . '</td>';
                         echo '<td>' . date('d/m/Y', strtotime($p->getFechaD())) . '</td>';
                         echo '<td>' . ($p->getFechaRD() == null ? '' : date('d/m/Y', strtotime($p->getFechaRD()))) . '</td>';
-                        echo '<td>' . ($p->getFechaRD() == null ?
-                            '<button type="submit" name="pDevolver" value="'.$p->getId().'">Devolver</button>':'');
+                        echo '<td>'; 
+                        echo ($p->getFechaRD() == null ?
+                            '<button type="submit" name="pDevolver" value="'.$p->getId().'">Devolver</button>': '');
                         echo '</td>';
                         echo '</tr>';
-                    }
 
+                    }
+                    
                     ?>
                 </tbody>
-            </table>
+            </table>          
         </form>
     </div>
 
