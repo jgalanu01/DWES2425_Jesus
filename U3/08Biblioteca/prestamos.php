@@ -93,12 +93,21 @@ require_once 'controlador.php';
                         <th>Fecha Préstamos</th>
                         <th>Fecha Devolución</th>
                         <th>Fecha Real Devolución</th>
-                        <th>Acciones</th>
+                        <?php if ($_SESSION['usuario']->getTipo() == 'A') { ?>
+                            <th>Acciones</th>
+                        <?php } ?>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                    $prestamos = $bd->obtenerPrestamos();
+                    if ($_SESSION['usuario']->getTipo() == 'A') {
+                        $prestamos = $bd->obtenerPrestamos();
+                    } elseif ($_SESSION['usuario']->getTipo() == 'S') {
+                        $prestamos = $bd->obtenerPrestamosSocio($_SESSION['usuario']);
+                    } else {
+                        $prestamos = array();
+                    }
+
                     foreach ($prestamos as $p) {
                         echo '<tr>';
                         echo '<td>' . $p->getId() . '</td>';
@@ -107,17 +116,18 @@ require_once 'controlador.php';
                         echo '<td>' . date('d/m/Y', strtotime($p->getFechaP())) . '</td>';
                         echo '<td>' . date('d/m/Y', strtotime($p->getFechaD())) . '</td>';
                         echo '<td>' . ($p->getFechaRD() == null ? '' : date('d/m/Y', strtotime($p->getFechaRD()))) . '</td>';
-                        echo '<td>'; 
-                        echo ($p->getFechaRD() == null ?
-                            '<button type="submit" name="pDevolver" value="'.$p->getId().'">Devolver</button>': '');
-                        echo '</td>';
+                        if ($_SESSION['usuario']->getTipo() == 'A') {
+                            echo '<td>';
+                            echo ($p->getFechaRD() == null ?
+                                '<button type="submit" name="pDevolver" value="' . $p->getId() . '">Devolver</button>' : '');
+                            echo '</td>';
+                        }
                         echo '</tr>';
-
                     }
-                    
+
                     ?>
                 </tbody>
-            </table>          
+            </table>
         </form>
     </div>
 
