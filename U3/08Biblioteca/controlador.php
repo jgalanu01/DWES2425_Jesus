@@ -60,58 +60,80 @@ if (isset($_POST['pCrear']) and $_SESSION['usuario']->getTipo() == 'A') {  // Po
 }
 
 
-if(isset($_POST['sCrearSocio']) and $_SESSION['usuario']->getTipo()=='A'){
-    if(!empty($_POST['dni']) and !empty($_POST['tipo'])){
-    //Crear socio
-    $u=new Usuario($_POST['dni'],$_POST['tipo']);
-    if($_POST['tipo']=='A'){
-        if($bd->crearUsuario($us,null)){
-            $mensaje='Usuario administrador creado';
-
+if (isset($_POST['sCrearSocio']) and $_SESSION['usuario']->getTipo() == 'A') {
+    if (!empty($_POST['dni']) and !empty($_POST['tipo'])) {
+        //Crear socio
+        $u = new Usuario($_POST['dni'], $_POST['tipo']);
+        if ($_POST['tipo'] == 'A') {
+            if ($bd->crearUsuario($us, null)) {
+                $mensaje = 'Usuario administrador creado';
+            } else {
+                $error = 'Error al crear el usuario';
+            }
+        } elseif ($_POST['tipo'] == 'S') {
+            if (!empty($_POST['dni']) and !empty($_POST['tipo'])) {
+                $s = new Socio(0, $_POST['nombre'], '', $_POST['email'], $_POST['dni']);
+                if ($bd->crearUsuario($u, $s)) {
+                    $mensaje = 'Usuario administrador creado';
+                } else {
+                    $error = 'Error al crear el usuario';
+                }
+            } else {
+                $error = 'Rellene los datos del socio';
+            }
         }
-        else{
-            $error='Error al crear el usuario';
-        }
-
+    } else {
+        $error = 'Préstamo no existe';
     }
-    elseif($_POST['tipo']=='S'){
-        if(!empty($_POST['dni']) and !empty($_POST['tipo'])){
-        $s=new Socio(0,$_POST['nombre'],'',$_POST['email'],$_POST['dni']);
-        if($bd->crearUsuario($u,$s)){
-            $mensaje='Usuario administrador creado';
-        }else{
-            $error='Error al crear el usuario';
-        }
-    }
-
-        else{
-            $error='Rellene los datos del socio';
-        }
-    }
-    }else{
-        $error='Relle los datos del socio'
-    }
-        
-    }
-
-
 }
-
-elseif (isset($_POST['dni']) and isset ($_POST['tipo']) and $_SESSION['usuario']->getTipo() == 'A') {
-        // Comprobar si ya hay un usuario con ese dni
+if (isset($_POST['lCrear']) and $_SESSION['usuario']->getTipo() == 'A') {
+    if (empty($_POST['titulo']) or empty($_POST['autor']) or empty($_POST['ejemplares'])) {
+        $error = 'Error, rellena los datos del libros';
+    } else {
+        $l = new Libro(0, $_POST['titulo'], $_POST['ejemplares'], $_POST['autor']);
+        $numero = $bd->crearLibro($l);
+        if ($numero > 0) {
+            $mensaje = 'Libros nº ' . $numero . ' creado';
+        } else {
+            $error = 'Se ha producido un error al crear el libro';
+        }
+    }
+}
+if (isset($_POST['sCrearSocio']) and $_SESSION['usuario']->getTipo() == 'A') {
+    if (!empty($_POST['dni']) and !empty($_POST['tipo'])) {
+        //Comprobar si ya hay un usuario con ese dni
         $us = $bd->obtenerUsuarioDni($_POST['dni']);
         if ($us == null) {
-            // Puedo crear el nuevo usuario
+            $u = new Usuario($_POST['dni'], $_POST['tipo']);
             if ($_POST['tipo'] == 'A') {
-                unset($_SESSION['creaSocio']);
-              
-            } elseif ($_POST['tipo'] == 'S') {
-                $_SESSION['creaSocio']=true;
-              
+                //Crear Admin
+                if ($bd->crearUsuario($u, null)) {
+                    $mensaje = 'Usuario administrador creado';
+                    //Una vez que se crea el socio, se destruye la variables de sesión
+                    //Y se dejan de recordar datos
+                    unset($_POST['dni']);
+                    unset($_POST['tipo']);
+                } else {
+                    $error = 'Error al crea el usuario';
+                }
+            } elseif ($_POST['tipo'] == 'S' and !empty($_POST['nombre']) and !empty($_POST['email'])) {
+                //Crear socio si todos los dratos están rellenos
+                $s = new Socio(0, $_POST['nombre'], '', $_POST['email'], $_POST['dni']);
+                if ($bd->crearUsuario($u, $s)) {
+                    $mensaje = 'Usuario socio creado';
+                    //Una vez que se crea el socio se dejan de recordar datos
+                    unset($_POST['dni']);
+                    unset($_POST['tipo']);
+                    unset($_POST['nombre']);
+                    unset($_POST['email']);
+                } else {
+                    $error = 'Error al crea el usario';
+                }
             }
         } else {
             $error = 'Error, ya existe un usuario con ese DNI';
         }
+    } else {
+        $error = 'Rellene los datos del usuario';
     }
-
-?>
+}
