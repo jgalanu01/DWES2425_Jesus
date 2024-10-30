@@ -16,7 +16,7 @@ require_once 'controlador.php';
 <body>
 
     <?php
-    require_once 'Menu.php';
+    require_once 'menu.php';
     ?>
 
     <div>

@@ -1,6 +1,6 @@
 <?php
 require_once 'controlador.php';
-require_once 'Menu.php';
+require_once 'menu.php';
 ?>
 
 <!DOCTYPE html>
@@ -16,7 +16,7 @@ require_once 'Menu.php';
 
     <!-- Menú de Navegación -->
     <?php
-    include 'Menu.php';
+    include 'menu.php';
     ?>
 
     <div>
