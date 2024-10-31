@@ -10,7 +10,7 @@ if (basename($_SERVER['PHP_SELF']) == 'Menu.php') {
 if ($_SESSION['usuario']->getTipo() == 'A') {
 ?>
 
-    <a href="socios.php">Socios</a>
+    <a href="socios.php">Usuarios</a>
 <?php
 
 }

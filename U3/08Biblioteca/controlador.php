@@ -86,6 +86,7 @@ if (isset($_POST['sCrearSocio']) and $_SESSION['usuario']->getTipo() == 'A') {
         $error = 'Préstamo no existe';
     }
 }
+
 if (isset($_POST['lCrear']) and $_SESSION['usuario']->getTipo() == 'A') {
     if (empty($_POST['titulo']) or empty($_POST['autor']) or empty($_POST['ejemplares'])) {
         $error = 'Error, rellena los datos del libros';
@@ -99,6 +100,7 @@ if (isset($_POST['lCrear']) and $_SESSION['usuario']->getTipo() == 'A') {
         }
     }
 }
+    
 if (isset($_POST['sCrearSocio']) and $_SESSION['usuario']->getTipo() == 'A') {
     if (!empty($_POST['dni']) and !empty($_POST['tipo'])) {
         //Comprobar si ya hay un usuario con ese dni

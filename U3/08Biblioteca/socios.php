@@ -1,11 +1,5 @@
 <?php
 require_once 'controlador.php';
-if (!isset($_POST['tipo']) or $_POST['tipo'] == 'A') {
-    //Cuando se carga la página se destruye la variable de sesión
-    unset($_SESSION['crearSocio']);
-} else {
-    $_SESSION['crearSocio'] = true;
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -63,7 +57,7 @@ if (!isset($_POST['tipo']) or $_POST['tipo'] == 'A') {
 
                     </div>
                     <?php
-                    if (isset($_SESSION['crearSocio']) and $_SESSION['crearSocio']) {
+                    if (isset($_POST['tipo']) and $_POST['tipo']=='S') {
                     ?>
                         <div class="row g-3">
                             <div class="col-md-3">
@@ -103,6 +97,39 @@ if (!isset($_POST['tipo']) or $_POST['tipo'] == 'A') {
                         </tr>
                     </thead>
                     <tbody>
+                        <?php
+                        $datos=$bd->obtenerDatosUsSocios();
+                        foreach($datos as $d){
+                            $u=$d[0];
+                            $s=$d[1];
+                            echo '<tr>';
+                            echo '<td>'.$u->getId().'</td>';
+                            echo '<td>'.$u->getTipo().'</td>';
+                            if($u->getTipo()=='S'){
+                                echo '<td>'.$s->getId().'</td>';
+                                echo '<td>'.$s->getNombre().'</td>';
+                                echo '<td>'.($s->getFechaSancion()==null?'':$s->getFechaSancion()).'</td>';
+                                echo '<td>'.$s->getEmail().'</td>';
+                               
+
+                            }else{
+                                echo '<td></td>';
+                                echo '<td></td>';
+                                echo '<td></td>';
+                                echo '<td></td>';
+
+
+                            }
+                            echo '<td>';
+                            '<button class="btn btn-outline-secondary" type="submit" id="sMSocio" name="sMSSocio" value="'.$u->getId().'">Modificar</button>
+                            <button class="btn btn-outline-secondary" type="submit" id="sBSocio" name="sBSocio" value="'.$u->getId().'">Borrar</button>'
+
+                            .'</td>';
+
+                            echo '</tr>';
+                           
+                        }
+                        ?>
 
 
                     </tbody>

@@ -1,92 +1,97 @@
 <?php
 require_once 'controlador.php';
-require_once 'menu.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biblioteca - Libros</title>
+    <title>Biblioteca</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </head>
 
 <body>
-
-    <!-- Menú de Navegación -->
     <?php
-    include 'menu.php';
+    require_once 'menu.php';
     ?>
-
-    <div>
-        <!-- Mensajes de éxito o error -->
-        <?php
-        if (isset($mensaje)) {
-            echo '<div class="alert alert-success" role="alert">' . $mensaje . '</div>';
-        }
-
-        if (isset($error)) {
-            echo '<div class="alert alert-danger" role="alert">' . $error . '</div>';
-        }
-        ?>
-    </div>
-
-    <div>
-        <!-- Área de creación de libros (visible solo para el admin) -->
-        <?php
-        if ($_SESSION['usuario']->getTipo() == 'A') {
-        ?>
-            <form action="" method="post">
-                <label for="titulo">Título</label>
-                <input type="text" name="titulo" id="titulo" required>
-
-                <label for="autor">Autor</label>
-                <input type="text" name="autor" id="autor" required>
-
-                <label for="ejemplares">Ejemplares</label>
-                <input type="number" name="ejemplares" id="ejemplares" min="1" required>
-
-                <button type="submit" name="crearLibro">Crear Libro</button>
-            </form>
-        <?php
-        }
-        ?>
-    </div>
-
-    <div>
+    <div class="container">
         <br />
-        <!-- Mostrar lista de libros -->
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Título</th>
-                    <th>Autor</th>
-                    <th>Ejemplares</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                $libros = $bd->obtenerLibros();
-                foreach ($libros as $libro) {
-                    echo '<tr>';
-                    echo '<td>' . $libro->getId() . '</td>';
-                    echo '<td>' . $libro->getTitulo() . '</td>';
-                    echo '<td>' . $libro->getAutor() . '</td>';
-                    echo '<td>' . $libro->getEjemplares() . '</td>';
-                    echo '<td>';
-                    echo '<button type="submit" name="modificarLibro" value="' . $libro->getId() . '">Modificar</button> ';
-                    echo '<button type="submit" name="borrarLibro" value="' . $libro->getId() . '">Borrar</button>';
-                    echo '</td>';
-                    echo '</tr>';
-                }
-                ?>
-            </tbody>
-        </table>
+        <div>
+            <!-- ÁREA DE ERRORES -->
+            <?php
+            if (isset($mensaje)) {
+                echo '<div class="alert alert-success" role="alert">' . $mensaje . '</div>';
+            }
+            if (isset($error)) {
+                echo '<div class="alert alert-danger" role="alert">' . $error . '</div>';
+            }
+            ?>
+        </div>
+        <div>
+            
+                <form action="" method="post" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="titulo" class="form-label">Título</label>
+                        <input type="text" class="form-control" name="titulo" id="titulo" placeholder="Título"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="autor" class="form-label">Autor</label>
+                        <input type="text" class="form-control" name="autor" id="autor"  placeholder="Autor"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="ejemplares" class="form-label">Ejemplares</label>
+                        <input class="form-control" name="ejemplares" id="ejemplares" value="1" type="number"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Acción</label><br />
+                        <button class="btn btn-outline-secondary" type="submit" id="lCrear" name="lCrear">+</button>
+                    </div>
+                </form>
+            
+        </div>
+        <div>
+            <br />
+            <!-- mostrar libros -->
+            <form action="" method="post">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Título</th>
+                            <th>Autor</th>
+                            <th>Ejemplares</th>
+                            <?php if($_SESSION['usuario']->getTipo()=='A'){?>
+                                <th>Acciones</th>
+                            <?php }?>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $libros=$bd->obtenerLibros();
+                        foreach ($libros as $l) {
+                            echo '<tr>';
+                            echo '<td>' . $l->getId() . '</td>';
+                            echo '<td>' . $l->getTitulo(). '</td>';
+                            echo '<td>' . $l->getAutor() . '</td>';
+                            echo '<td>' . $l->getEjemplares() . '</td>';
+                            if($_SESSION['usuario']->getTipo()=='A'){
+                                echo '<td>';
+                                echo '<button class="btn btn-outline-secondary" type="submit" name="lModificar" 
+                                    value="' . $l->getId() . '">Modificar</button>';
+                                echo '<button class="btn btn-outline-secondary" type="submit" name="lBorrar" 
+                                value="' . $l->getId() . '">Borrar</button>';
+                                echo '</td>';
+                            }
+                            echo '</tr>';
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </form>
+        </div>
     </div>
-
 </body>
 
 </html>
