@@ -1,5 +1,26 @@
 <?php
 require_once 'Modelo.php';
+
+function generarInput($tipo,$nombre,$valor,$boton,$valorBoton){
+    if(isset($_POST[$boton]) && $_POST[$boton]==$valorBoton){
+        return '<'.$tipo.' name="'.$nombre.'" value="'.$valor.'"/>';
+
+    }else{
+        return $valor;
+    }
+}
+
+function generarBotones($nombreB1, $nombreB2, $textoB1,$textoB2,$boton,$valorBoton){
+    if(isset($_POST[$boton]) && $_POST[$boton]==$valorBoton){
+           return '<button class="btn btn-outline-secondary" type="submit" name="'.$nombreB2.'" value="'.$valorBoton.'">'.$textoB2.'</button>';
+
+    }else{
+        return '<button class="btn btn-outline-secondary" type="submit" name="'.$nombreB1.'" value="'.$valorBoton.'">'.$textoB1.'</button>';
+    }
+
+    
+
+}
 session_start();
 
 // Si no hay sesión iniciada, redirigimos a login 
@@ -139,3 +160,42 @@ if (isset($_POST['sCrearSocio']) and $_SESSION['usuario']->getTipo() == 'A') {
         $error = 'Rellene los datos del usuario';
     }
 }
+
+    if(isset($_POST['sGSocio']) and $_SESSION['usuario']->getTipo()== 'A'){
+        //Obtener los datos antiguos del usuario
+
+        $u=$bd->obtenerUsuarioDni($_POST['sGSocio']);
+        if(empty($_POST['dni'])){
+            $error='Error, el id no puede estar vacío';
+
+        }
+
+        //Comprobar si ha cambiado el dni
+        elseif($_POST['dni']!=$u->getId()) {
+            //Se ha modificado el dni 
+            //Hay que comprobar que no hay otro usuario con 
+            //el nuevo dni 
+            $uNuevo=$bd->obtenerUsuarioDni($_POST['dni']);
+            if($uNuevo!=null){
+                $error='Error, ya hay otro usuario con ese dni';
+            }
+        }if(!isset($error)){
+            //Modificamos datos
+
+            $u->getId($_POST['dni']);
+            //Recuperamos el socio 
+            $s=$bd->obtenerSocioDni($_POST['dni']);
+            $s->setNombre($_POST['nombre']);
+            $s->setfechaSancion($_POST['fSancion']);
+            $s->setEmail($_POST['email']);
+
+            if($bd->ModificarUSySocio($u,$s,$_POST['dni'])){
+            $mensaje='Usuario modificado';
+
+            }else{
+                $error='Error al modificar el usuario';
+            }
+
+        }
+        
+    }

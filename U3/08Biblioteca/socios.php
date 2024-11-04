@@ -38,38 +38,37 @@ require_once 'controlador.php';
                     <div class="row g-3">
                         <div class="col-md-3">
                             <label for="dni" class="form-label">DNI</label>
-                            <input type="text" class="form-control" name="dni" id="dni"
-                                value="<?php echo (isset($_POST['dni']) ? $_POST['dni'] : '') ?>" />
+                            <input type="text" class="form-control" name="dni" id="dni" 
+                            value="<?php echo (isset($_POST['dni'])?$_POST['dni']:'')?>"/>
                         </div>
                         <div class="col-md-3">
                             <label for="tipo" class="form-label">Tipo</label>
                             <select class="form-select" name="tipo" id="tipo" onchange="submit()">
                                 <option value="A">Administrador</option>
-                                <option value="S"
-                                    <?php echo (isset($_POST['tipo']) && $_POST['tipo'] == 'S' ? 'selected="selected"' : '') ?>>Socio</option>
+                                <option value="S" 
+                        <?php echo (isset($_POST['tipo']) && $_POST['tipo']=='S'?'selected="selected"':'')?>
+                            >Socio</option>
                             </select>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Acción</label><br />
                             <button class="btn btn-outline-secondary" type="submit" id="sCrearSocio" name="sCrearSocio">+</button>
                         </div>
-
-
                     </div>
                     <?php
-                    if (isset($_POST['tipo']) and $_POST['tipo']=='S') {
+                    if(isset($_POST['tipo']) and $_POST['tipo']=='S'){
                     ?>
-                        <div class="row g-3">
-                            <div class="col-md-3">
-                                <label for="nombre" class="form-label">Nombre</label>
-                                <input type="text" class="form-control" name="nombre" id="nombre" />
-                            </div>
-                            <div class="col-md-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" name="email" id="email" />
-                            </div>
-
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" name="nombre" id="nombre" />
                         </div>
+                        <div class="col-md-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" id="email" />
+                        </div>
+                        
+                    </div>
                     <?php
                     }
                     ?>
@@ -98,39 +97,34 @@ require_once 'controlador.php';
                     </thead>
                     <tbody>
                         <?php
-                        $datos=$bd->obtenerDatosUsSocios();
-                        foreach($datos as $d){
-                            $u=$d[0];
-                            $s=$d[1];
-                            echo '<tr>';
-                            echo '<td>'.$u->getId().'</td>';
-                            echo '<td>'.$u->getTipo().'</td>';
-                            if($u->getTipo()=='S'){
-                                echo '<td>'.$s->getId().'</td>';
-                                echo '<td>'.$s->getNombre().'</td>';
-                                echo '<td>'.($s->getFechaSancion()==null?'':$s->getFechaSancion()).'</td>';
-                                echo '<td>'.$s->getEmail().'</td>';
+                            $datos = $bd->obtenerDatosUsSocios();
+                            foreach($datos as $d){
+                                $u=$d[0];
+                                $s=$d[1];
+                                echo '<tr>';
+                                echo '<td>'.generarInput('input','dni',$u->getId(),'sMSocio',$u->getId()).'</td>';
+                                echo '<td>'.$u->getTipo().'</td>';
+                                if($u->getTipo()=='S'){
+                                    echo '<td>'.$s->getId().'</td>';
+                                    echo '<td>'.generarInput('input','nombre',$s->getNombre(),'sMSocio',$u->getId()).'</td>';
+                                    echo '<td>'.($s->getFechaSancion()==null?'':generarInput('input type="date"','fSancion',$s->getFechaSancion(),'sMSocio',$u->getId())).'</td>';
+                                    echo '<td>'.generarInput('input type="email"','email',$s->getEmail(),'sMSocio',$u->getId()).'</td>';
+                                }
+                                else{
+                                    echo '<td></td>';
+                                    echo '<td></td>';
+                                    echo '<td></td>';
+                                    echo '<td></td>';
+                                }
+                                echo '<td>'.
+
+                                generarBotones('sMSocio','sGSocio','Modificar','Guardar','sMSocio',$u->getId()).
+                                generarBotones('sBSocio','sCSocio','Borrar','Cancelar','sMSocio',$u->getId())
                                
-
-                            }else{
-                                echo '<td></td>';
-                                echo '<td></td>';
-                                echo '<td></td>';
-                                echo '<td></td>';
-
-
+                                .'</td>';
+                                echo '</tr>';
                             }
-                            echo '<td>';
-                            '<button class="btn btn-outline-secondary" type="submit" id="sMSocio" name="sMSSocio" value="'.$u->getId().'">Modificar</button>
-                            <button class="btn btn-outline-secondary" type="submit" id="sBSocio" name="sBSocio" value="'.$u->getId().'">Borrar</button>'
-
-                            .'</td>';
-
-                            echo '</tr>';
-                           
-                        }
                         ?>
-
 
                     </tbody>
                 </table>
