@@ -406,12 +406,16 @@ class Modelo{
     function obtenerSocioDni($dni){
         $resultado=null;
         try {
-            $consulta=$this->conexion->prepare('SELECT * from socios where upper(us)=upper(?)');
+            $consulta=$this->conexion->prepare('SELECT * from socios where upper(us) = upper(?)');
             $params=array($dni);
-            if($consulta->execute)
+            if($consulta->execute($params)){
+                if($fila=$consulta->fetch()){
+                    $resultado=new Socio($fila['id'],$fila['nombre'],
+                                   $fila['fechaSancion'],$fila['email'],$fila['us']);
+                }
+            }
         } catch (\Throwable $th) {
-    echo $th->getMessage();
-         
+            echo $th->getMessage();
         }
 
         return $resultado;
@@ -425,15 +429,16 @@ class Modelo{
         try {
             $this->conexion->beginTransaction();
             //Modificar usuario
-            $consulta=$this->conexion->prepare('UPDATE usuarios set dni=? where dni=?');
+            $consulta=$this->conexion->prepare('UPDATE usuarios set id=? where id=?');
             $params=array($u->getId(),$dniAntiguo); 
-            if($consulta->execute($params) and $consulta->rowCount()==1){
+            if($consulta->execute($params)){
                 //Comprobar si crear socio
                 if($s!=null){
-                    //Modoificar Socio
-                    $consulta=$this->conexion->prepare('UPDATE socios set nombre=?,fechaSancion=?, email=?');
-                    $params=array($s->getNombre(),$s->getEmail(),$s->getUs());
-                    if($consulta->execute($params) and $consulta->rowCount()==1){
+                    //Modificar Socio
+                    $consulta=$this->conexion->prepare('UPDATE socios set nombre=?,fechaSancion=?, email=?
+                    where id=?');
+                    $params=array($s->getNombre(),$s->getFechaSancion(),$s->getEmail(),$s->getId());
+                    if($consulta->execute($params)){
                         $this->conexion->commit();
                         $resultado=true;
                     }
@@ -455,6 +460,56 @@ class Modelo{
             echo $th->getMessage();
         }
         return $resultado;
+
+    }
+
+    function borrarUsuario($u,$borrarPrestamos){
+        $resultado=false;
+
+        try {
+
+            $this->conexion->beginTransaction();
+            if($borrarPrestamos){
+                $consulta=$this->conexion->prepare('DELETE from prestamos where socio = (SELECT id from socios where us=?)');
+
+                $params=array($u->getId());
+                if(!$consulta->execute($params)){
+                    return false;
+                    
+                }
+
+            }
+
+            //Borrar Socio
+
+            $consulta=$this->conexion->prepare('DELETE from socios where us=?');
+            $params=array($u->getId());
+            if(!$consulta->execute($params)){
+               //Borrar usuario
+               $consulta=$this->conexion->prepare('DELETE from usuarios where id=?');
+               $params=array($u->getId());
+               if($consulta->execute($params) and $consulta->rowCount()==1){
+                $this->conexion->commit();
+                $resultado=true;
+               }
+               else{
+                $this->conexion->rollBack();
+               }
+
+                
+            }
+            else{
+                $this->conexion->rollBack();
+            }
+        
+        } catch(PDOException $th){
+            $this->conexion->rollBack();
+            echo $th->getMessage();
+        }
+    
+        catch (\Throwable $th) {
+            echo $th->getMessage();
+        }
 
     }
 
