@@ -484,7 +484,7 @@ class Modelo{
 
             $consulta=$this->conexion->prepare('DELETE from socios where us=?');
             $params=array($u->getId());
-            if(!$consulta->execute($params)){
+            if($consulta->execute($params)){
                //Borrar usuario
                $consulta=$this->conexion->prepare('DELETE from usuarios where id=?');
                $params=array($u->getId());
@@ -510,6 +510,7 @@ class Modelo{
         catch (\Throwable $th) {
             echo $th->getMessage();
         }
+        return $resultado;
 
     }
 

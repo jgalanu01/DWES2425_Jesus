@@ -10,33 +10,42 @@ function generarInput($tipo,$nombre,$valor,$boton,$valorBoton){
     }
 }
 
-function generarModal($titulo){
+function generarModal($titulo,$textoVentana,$nombreBoton,$valorBoton,$textoBoton){
     return '
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="Modal'.$valorBoton.'" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">'.$titulo.'</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="submit" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        ...
+      <div class="modal-body">'.$textoVentana.'
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" name="'.$nombreBoton.'" value="'.$valorBoton.'" class="btn btn-primary">'.$textoBoton.'</button>
       </div>
     </div>
   </div>
 </div>';
 }
 
-function generarBotones($nombreB1, $nombreB2, $textoB1,$textoB2,$boton,$valorBoton){
+function generarBotones($nombreB1, $nombreB2, $textoB1,$textoB2,$boton,$valorBoton,$tienePrestamos){
     if(isset($_POST[$boton]) && $_POST[$boton]==$valorBoton){
-           return '<button class="btn btn-outline-secondary" type="submit" name="'.$nombreB2.'" value="'.$valorBoton.'">'.$textoB2.'</button>';
+           return '<button class="btn btn-outline-secondary" type="submit" name="'.$nombreB2.
+           '" value="'.$valorBoton.'">'.$textoB2.'</button>';
 
     }else{
+        if($nombreB1=='sBSocio' and $tienePrestamos){
+            //Generar botón con ventana de aviso 
+            $htmlBoton='<button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#Modal'.$valorBoton.'" type="button"
+             name="'.$nombreB1.'" value="'.$valorBoton.'">'.$textoB1.'</button>';
+             $htmlVentana=generarModal('El socio tiene préstamos',"El socio $valorBoton tiene prestamos. ¿Desea borrarlo?",'sDeleteSocio',$valorBoton,'Borrar');
+             return $htmlBoton.$htmlVentana;
+        }
+        else{
         return '<button class="btn btn-outline-secondary" type="submit" name="'.$nombreB1.'" value="'.$valorBoton.'">'.$textoB1.'</button>';
+        }
     }
 
     
@@ -223,21 +232,33 @@ if (isset($_POST['sCrearSocio']) and $_SESSION['usuario']->getTipo() == 'A') {
         
     }
 
-    if(isset($_POST['sBSocio']) and $_SESSION['usuario']->getTipo()== 'A'){
-        $u=$bd->obtenerUsuarioDni($_POST['sBSocio']);
+    if((isset($_POST['sBSocio']) or isset ($_POST['sDeleteSocio'])) and $_SESSION['usuario']->getTipo()== 'A'){
+        if(isset($_POST['sBSocio'])){
+            $id=$_POST['sBSocio'];
+        }
+        else{
+            $id=$_POST['sDeleteSocio'];
+        }
+        $u=$bd->obtenerUsuarioDni($id);
         if($u!=null){
             if($u->getId()==$_SESSION['usuario']->getId()){
                 $error='Error, no puedes borrar el usuario conectado';
             }
             else{
                 //Comprobar si el usuario tiene préstamos
-                $pretamos=$bd->obtenerPrestamosSocio($u);
+                $prestamos=$bd->obtenerPrestamosSocio($u);
                 if(sizeof($prestamos)>0){
                     //Aviso
+                    if($bd->borrarUsuario($u,true)){
+                        $mensaje='Usuario borrado';
+                    }
+                    else{
+                        $error='Se ha producido un error al borrar el usuario';
+                    }
                 }
                 else{
                     //Borrar
-                    if($bd->borrarUsuario($u,false)){
+                     if($bd->borrarUsuario($u,false)){
                         $mensaje='Usuario borrado';
                     }
                     else{
