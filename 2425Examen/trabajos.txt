@@ -1,1 +1,4 @@
 2024-11-11;jesusin;Textil;Limpieza/Planchado;123
+2024-11-11;suso;Textil;Limpieza;23
+2024-11-11;jesus;Textil;Limpieza/Planchado;12
+2024-11-11;sergio;Hogar;Planchado/Desmanchado;340

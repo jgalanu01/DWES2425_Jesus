@@ -81,7 +81,7 @@
         if (!empty($mensaje)) {
             echo $mensaje;
         } else {
-            // Concatenación de servicios seleccionados
+
             $serviciosSeleccionados = [];
             if (!empty($_POST["Limpieza"])) {
                 $serviciosSeleccionados[] = "Limpieza";

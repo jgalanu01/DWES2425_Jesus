@@ -1,6 +1,10 @@
 <?php
+// Incluir las clases Trabajo y Modelo
 
 require_once 'Modelo.php';
+
+
+$modelo = new Modelo("trabajos.txt");
 
 function recordarPrenda($nombre, $valor)
 {
@@ -123,18 +127,52 @@ function recordarServicio($nombre, $valor)
             // Crear una instancia de Trabajo con los datos del formulario
             $trabajo = new Trabajo($_POST["fecha"], $_POST["nombre"], $_POST["tipoP"], $serviciosConcatenados, $_POST["importe"]);
 
-            // Guardar el trabajo en el archivo
-            $modelo = new Modelo("trabajos.txt");
+            // Guardar el trabajo en el archivo usando Modelo
+
             $modelo->crearTrabajo($trabajo);
 
             // Mensaje de datos guardados correctamente
             echo "<p>Datos guardados correctamente:</p>";
             echo "<p>Prenda: " . $_POST["tipoP"] . "</p>";
             echo "<p>Servicio: " . $serviciosConcatenados . "</p>";
-            echo "<p>Importe: " . $_POST["importe"] . " euros</p>";
+            echo "<p>Importe: " . $_POST["importe"] . " €</p>";
         }
     }
     ?>
+
+    <!--Tabla de trabajos guardados -->
+    <h3>Trabajos Guardados</h3>
+    <table border="1">
+        <tr>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Tipo de Prenda</th>
+            <th>Servicios</th>
+            <th>Importe</th>
+        </tr>
+
+        <?php
+
+        $trabajos = $modelo->obtenerTrabajos();
+
+        foreach ($trabajos as $trabajo) {
+            echo "<tr>";
+            echo "<td>" . $trabajo->getFecha() . "</td>";
+            echo "<td>" . $trabajo->getNombre() . "</td>";
+            echo "<td>" . $trabajo->getTipoP() . "</td>";
+            echo "<td>" . $trabajo->getServicios() . "</td>";
+            echo "<td>" . $trabajo->getImporte() . "</td>";
+
+            echo "</tr>";
+        }
+
+
+
+        ?>
+
+
+    </table>
+
 </body>
 
 </html>

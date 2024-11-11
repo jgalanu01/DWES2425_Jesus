@@ -7,7 +7,7 @@ class Modelo
 
     private $nombre;
 
-    // Constructor sin valor predeterminado, requiere que se pase el nombre del archivo
+
     function __construct($nombreF)
     {
         $this->nombre = $nombreF;
@@ -17,12 +17,10 @@ class Modelo
     function crearTrabajo(Trabajo $t)
     {
         try {
-            // Asegúrate de que la ruta esté dentro de comillas y concatenada correctamente
-            $rutaCompleta = '/var/www/html/DWES2425_Jesus/2425Examen/' . $this->nombre;
 
-            $f = fopen($rutaCompleta, 'a+');
+            $f = fopen($this->nombre, 'a+');
             if (!$f) {
-                throw new Exception("No se pudo abrir el archivo para escribir en $rutaCompleta.");
+                throw new Exception("No se pudo abrir el archivo para escribir");
             }
             fwrite($f, $t->getFecha() . ';' . $t->getNombre() . ';' . $t->getTipoP() . ';' . $t->getServicios() . ';' . $t->getImporte() . PHP_EOL);
         } catch (Throwable $th) {
@@ -35,13 +33,13 @@ class Modelo
     }
 
     // Método para obtener todos los trabajos del archivo
-    //NO la estoy usando
+
     function obtenerTrabajos()
     {
         $resultado = [];
         try {
             if (file_exists($this->nombre)) {
-                $registros = file($this->nombre, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                $registros = file($this->nombre, FILE_IGNORE_NEW_LINES);
                 foreach ($registros as $linea) {
                     $campos = array_map('trim', explode(';', $linea));
                     if (count($campos) === 5) { // Asegura que todos los campos estén presentes
@@ -56,5 +54,25 @@ class Modelo
         }
 
         return $resultado;
+    }
+
+    /**
+     * Get the value of nombre
+     */
+    public function getNombre()
+    {
+        return $this->nombre;
+    }
+
+    /**
+     * Set the value of nombre
+     *
+     * @return  self
+     */
+    public function setNombre($nombre)
+    {
+        $this->nombre = $nombre;
+
+        return $this;
     }
 }
