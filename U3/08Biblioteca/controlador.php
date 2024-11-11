@@ -1,5 +1,6 @@
 <?php
 require_once 'Modelo.php';
+require_once 'Correo.php';
 
 function generarInput($tipo,$nombre,$valor,$boton,$valorBoton){
     if(isset($_POST[$boton]) && $_POST[$boton]==$valorBoton){
@@ -167,13 +168,45 @@ if (isset($_POST['sCrearSocio']) and $_SESSION['usuario']->getTipo() == 'A') {
                     unset($_POST['dni']);
                     unset($_POST['tipo']);
                 } else {
-                    $error = 'Error al crea el usuario';
+                    $error = 'Error al crear el usuario';
                 }
             } elseif ($_POST['tipo'] == 'S' and !empty($_POST['nombre']) and !empty($_POST['email'])) {
                 //Crear socio si todos los dratos están rellenos
                 $s = new Socio(0, $_POST['nombre'], '', $_POST['email'], $_POST['dni']);
                 if ($bd->crearUsuario($u, $s)) {
                     $mensaje = 'Usuario socio creado';
+                    //Enviar correo
+                    $email=new Correo();
+                    if($email->getCa()!=null){
+                        $textoHtml='<h1>'.$s->getNombre().',bienvenido a la Biblioteca de Jesús</h1>'
+                        .'<p>Tus credenciales de accesp son:<br/>'
+                        .'Usuario:'.$s->getUs().'<br/>'
+                        .'Contraseña:'.$s->getUs().'<br/>'
+                        .'</p>'
+                        .'<h3>No olvides cambiar tu contraseña despúes del primer acceso</h3>';
+                        $textoNoHtml=$s->getNombre().
+                        ',bienvenido a la Biblioteca de Jesús.\n'
+                        .'Tus credenciales de acceso son:\n'
+                        .'Usuario:'.$s->getUs().'\n'
+                        .'Contraseña:'.$s->getUs().'\n'
+                        .'\n'
+                        .'No olvides cambiar tu contraseña en el primer acceso';
+                       if($email->enviarCorreo('Creedenciales acceso Biblioteca',
+                       $s,
+                       $textoHtml,
+                       $textoNoHtml)){
+                        $mensaje.='.Se ha enviado email de credenciales de acceso';
+                       }
+                            else{
+                                $error='No se ha enviado email de credenciales de acceso';
+                            }
+                        }
+
+                    }else{
+                        $mensaje.='.No se ha enviado email de creedenciales de acceso';
+                    }
+
+
                     //Una vez que se crea el socio se dejan de recordar datos
                     unset($_POST['dni']);
                     unset($_POST['tipo']);
@@ -189,7 +222,6 @@ if (isset($_POST['sCrearSocio']) and $_SESSION['usuario']->getTipo() == 'A') {
     } else {
         $error = 'Rellene los datos del usuario';
     }
-}
 
     if(isset($_POST['sGSocio']) and $_SESSION['usuario']->getTipo()== 'A'){
         //Obtener los datos antiguos del usuario
