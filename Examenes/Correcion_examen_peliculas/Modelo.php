@@ -31,7 +31,7 @@ class Modelo
         try {
             if (file_exists($this->nombre)) {
                 //Cargamos el fichero en un array
-                $tmp = file($this->nombre);
+                $tmp = file($this->nombre, FILE_IGNORE_NEW_LINES);
                 foreach ($tmp as $linea) {
                     $campos = explode(';', $linea);
                     //Crear objeto pelicula
