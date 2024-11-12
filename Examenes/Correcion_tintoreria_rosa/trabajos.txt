@@ -1,2 +1,3 @@
 12/11/2024;Carlos;Cuero;limpieza/desmanchado;177
 12/11/2024;Charo;Fiesta;limpieza/planchado;80
+12/11/2024;jesusiito;Textil;limpieza;1

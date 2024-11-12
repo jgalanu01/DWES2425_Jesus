@@ -1,11 +1,11 @@
 <?php
-function rellenarSelect($valor,$defecto){
-    if(isset($_POST['tipo'])){
-        if($_POST['tipo']==$valor){
+function rellenarSelect($valor, $defecto)
+{
+    if (isset($_POST['tipo'])) {
+        if ($_POST['tipo'] == $valor) {
             echo 'selected="selected"';
         }
-    }
-    elseif($defecto){
+    } elseif ($defecto) {
         echo 'selected="selected"';
     }
 }
@@ -26,37 +26,37 @@ function rellenarSelect($valor,$defecto){
             <legend>Registrar Trabajo</legend>
             <div>
                 <label for="fecha">Fecha Entrada</label><br />
-                <input type="date" id="fecha" name="fecha" value="<?php 
-                    echo (isset($_POST['fecha'])?$_POST['fecha']:date('Y-m-d')) ?>" />
+                <input type="date" id="fecha" name="fecha" value="<?php
+                                                                    echo (isset($_POST['fecha']) ? $_POST['fecha'] : date('Y-m-d')) ?>" />
             </div>
             <div>
                 <label for="nombre">Cliente</label><br />
-                <input type="text" id="nombre" name="nombre" placeholder="Nombre cliente" value="<?php 
-                    echo (isset($_POST['nombre'])?$_POST['nombre']:'')
-                ?>"/>
+                <input type="text" id="nombre" name="nombre" placeholder="Nombre cliente" value="<?php
+                                                                                                    echo (isset($_POST['nombre']) ? $_POST['nombre'] : '')
+                                                                                                    ?>" />
             </div>
             <div>
                 <label for="tipo">Tipo</label><br />
                 <select name="tipo_aux" id="tipo_aux">
-                    
-                    <option <?php 
-                    echo (isset($_POST['tipo']) && $_POST['tipo']=='Fiesta'?'selected="selected"':'')
-                    ?>>Fiesta</option>
-                    <option <?php 
-                    echo (isset($_POST['tipo']) && $_POST['tipo']=='Cuero'?'selected="selected"':'')
-                    ?>>Cuero</option>
-                    <option <?php 
-                    echo (isset($_POST['tipo']) && $_POST['tipo']=='Hogar'?'selected="selected"':'')
-                    ?>>Hogar</option>
-                    <option <?php 
-                    echo ((!isset($_POST['tipo'])) || (isset($_POST['tipo']) && $_POST['tipo']=='Textil')?'selected="selected"':'')
-                    ?>>Textil</option>
+
+                    <option <?php
+                            echo (isset($_POST['tipo']) && $_POST['tipo'] == 'Fiesta' ? 'selected="selected"' : '')
+                            ?>>Fiesta</option>
+                    <option <?php
+                            echo (isset($_POST['tipo']) && $_POST['tipo'] == 'Cuero' ? 'selected="selected"' : '')
+                            ?>>Cuero</option>
+                    <option <?php
+                            echo (isset($_POST['tipo']) && $_POST['tipo'] == 'Hogar' ? 'selected="selected"' : '')
+                            ?>>Hogar</option>
+                    <option <?php
+                            echo ((!isset($_POST['tipo'])) || (isset($_POST['tipo']) && $_POST['tipo'] == 'Textil') ? 'selected="selected"' : '')
+                            ?>>Textil</option>
                 </select>
                 <select name="tipo" id="tipo">
-                    <option <?php rellenarSelect('Fiesta',false)?>>Fiesta</option>
-                    <option <?php rellenarSelect('Cuero',false)?>>Cuero</option>
-                    <option <?php rellenarSelect('Hogar',false)?>>Hogar</option>
-                    <option <?php rellenarSelect('Textil',true)?>>Textil</option>
+                    <option <?php rellenarSelect('Fiesta', false) ?>>Fiesta</option>
+                    <option <?php rellenarSelect('Cuero', false) ?>>Cuero</option>
+                    <option <?php rellenarSelect('Hogar', false) ?>>Hogar</option>
+                    <option <?php rellenarSelect('Textil', true) ?>>Textil</option>
                 </select>
             </div>
             <div>
@@ -70,49 +70,57 @@ function rellenarSelect($valor,$defecto){
             </div>
             <div>
                 <label for="importe">Importe</label><br />
-                <input type="number" id="importe" name="importe" value="<?php 
-                echo (isset($_POST['importe'])?$_POST['importe']:1)
-                ?>" />
+                <input type="number" id="importe" name="importe" value="<?php
+                                                                        echo (isset($_POST['importe']) ? $_POST['importe'] : 1)                            //  echo (isset($_POST['importe']) ? $_POST['importe'] : '')
+                                                                        //Esto es si quiero quedar el valor en 1
+
+                                                                        ?>" />
+
             </div>
             <div>
-                <input type="submit" name="guardar" value="guardar"/>
-        </div>
+                <input type="submit" name="guardar" value="guardar" />
+            </div>
         </fieldset>
     </form>
     <?php
     if (isset($_POST['guardar'])) {
         if (empty($_POST['fecha']) or empty($_POST['nombre']) or empty($_POST['tipo']) or empty($_POST['importe'])) {
             echo 'Rellena fecha, nombre, tipo e importe';
-            $error=true;
+            $error = true;
         }
-        if(!isset($_POST['servicios']) or sizeof($_POST['servicios'])<1){
+        if (!isset($_POST['servicios']) or sizeof($_POST['servicios']) < 1) {
             echo 'Al menos debes marcar un servicio';
-            $error=true;
+            $error = true;
         }
         //if(isset($_POST["tipo"]) and $_POST['tipo']=="Cuero" 
-             //and isset($_POST['servicios']) and in_array('Planchado',$_POST['servicios'])){
-        if(isset($_POST["tipo"]) and $_POST['tipo']=="Cuero" 
-             and isset($_POST['servicios']) and in_array('planchado',$_POST['servicios'])){
+        //and isset($_POST['servicios']) and in_array('Planchado',$_POST['servicios'])){
+        if (
+            isset($_POST["tipo"]) and $_POST['tipo'] == "Cuero"
+            and isset($_POST['servicios']) and in_array('planchado', $_POST['servicios'])
+        ) {
             //foreach($_POST['servicios'] as $s){
-              //  if($s=='Planchado'){
-                    echo 'No puedes seleccionar Cuero y planchado';
-                    $error=true;
-                //    break;
-                //}
+            //  if($s=='Planchado'){
+            echo 'No puedes seleccionar Cuero y planchado';
+            $error = true;
+            //    break;
+            //}
             //}
         }
-        if(isset($_POST['tipo']) and $_POST['tipo']=='Fiesta' 
-            and isset($_POST['importe']) and $_POST['importe']<=50){
-                echo 'El importe en prendas de fiesta debe ser > 50';
-                $error=true;
+        if (
+            isset($_POST['tipo']) and $_POST['tipo'] == 'Fiesta'
+            and isset($_POST['importe']) and $_POST['importe'] <= 50
+        ) {
+            echo 'El importe en prendas de fiesta debe ser > 50';
+            $error = true;
         }
 
-        if(!isset($error)){
+        if (!isset($error)) {
             echo '<h2>Datos Correctos</h2>';
-            echo '<h3>Prenda:'.$_POST['tipo'].'</h3>';
-            echo '<h3>Servicio:'.implode('/',$_POST['servicios']).'</h3>';
+            echo '<h3>Prenda:' . $_POST['tipo'] . '</h3>';
+            echo '<h3>Servicio:' . implode('/', $_POST['servicios']) . '</h3>';
         }
     }
     ?>
 </body>
+
 </html>
