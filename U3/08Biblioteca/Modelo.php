@@ -513,6 +513,40 @@ class Modelo{
         return $resultado;
 
     }
+    public function estadistica($ids) {
+    $resultado = array();
+    try {
+        // Tratar los datos del primer select del procedimiento
+        $consulta = $this->conexion->prepare('CALL infoSocio(?)');
+        $params = array($ids);
+        if ($consulta->execute($params)) {
+            if ($fila = $consulta->fetch()) {
+                $resultado[] = array(1, 'Total Préstamos', $fila[0]);
+                $resultado[] = array(2, 'Primer préstamo', $fila[1]);
+                $resultado[] = array(3, 'Último préstamo', $fila[2]);
+            }
+
+            // Tratar los datos del segundo select del procedimiento
+            if ($consulta->nextRowset()) {
+                $fila = $consulta->fetch();
+                $resultado[] = array(1, 'No devueltos', $fila[0]);
+                $resultado[] = array(1, 'Devueltos', $fila[1]);
+                $resultado[] = array(1, 'Último Libro', $fila[2]);
+            }
+
+            // Tratar los datos del último select del procedimiento
+            if ($consulta->nextRowset()) {
+                while ($fila = $consulta->fetch()) {
+                    $resultado[] = array(2, $fila[0], $fila[1]);
+                }
+            }
+        }
+    } catch (\Throwable $th) {
+        echo $th->getMessage();
+    }
+    return $resultado;
+}
+
 
     /**
      * Get the value of conexion
