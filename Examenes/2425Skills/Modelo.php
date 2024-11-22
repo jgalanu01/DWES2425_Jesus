@@ -1,8 +1,8 @@
 <?php
-require_once 'Modalidad.php'; // (Ejercicio 1) Manejar datos de la modalidad
-require_once 'Alumno.php'; // (Ejercicio 2) Manejar datos del alumno
-require_once 'Prueba.php'; // (Ejercicio 4) Manejar datos de las pruebas
-require_once 'Correccion.php'; // (Ejercicio 4 y 5) Manejar datos de las correcciones
+require_once 'Modalidad.php'; // (Ejercicio 1) Clase para manejar datos de modalidad
+require_once 'Alumno.php'; // (Ejercicio 2) Clase para manejar datos de alumnos
+require_once 'Correccion.php'; // (Ejercicios 4 y 5) Clase para manejar datos de correcciones
+require_once 'Prueba.php'; // (Ejercicio 4) Clase para manejar datos de pruebas
 
 class Modelo
 {
@@ -18,6 +18,7 @@ class Modelo
                 'root'
             );
         } catch (\Throwable $th) {
+            // Manejar error de conexión
             echo $th->getMessage();
         }
     }
@@ -37,7 +38,7 @@ class Modelo
         return $resultado;
     }
 
-    // (Ejercicio 1) Obtener una modalidad específica
+    // (Ejercicio 1) Obtener una modalidad específica por ID
     function obtenerModalidad($id)
     {
         $resultado = null;
@@ -55,7 +56,7 @@ class Modelo
         return $resultado;
     }
 
-    // (Ejercicio 2) Obtener los alumnos de una modalidad específica
+    // (Ejercicio 2) Obtener todos los alumnos de una modalidad específica
     function obtenerAlumnosModalidad($id)
     {
         $resultado = array();
@@ -79,7 +80,7 @@ class Modelo
         return $resultado;
     }
 
-    // (Ejercicio 2) Obtener un alumno específico
+    // (Ejercicio 2) Obtener un alumno específico por ID
     function obtenerAlumno($id)
     {
         $resultado = null;
@@ -127,15 +128,15 @@ class Modelo
         return $resultado;
     }
 
-    // (Ejercicio 4) Obtener una prueba específica
-    function obtenerPrueba($idPrueba)
+    // (Ejercicio 4) Obtener una prueba específica por ID
+    function obtenerPrueba($idP)
     {
         $resultado = null;
         try {
             $consulta = $this->conexion->prepare('SELECT * from prueba where id = ?');
-            $params = array($idPrueba);
+            $params = array($idP);
             if ($consulta->execute($params)) {
-                if ($fila = $consulta->fetch()) {
+                while ($fila = $consulta->fetch()) {
                     $resultado = new Prueba(
                         $fila['id'],
                         $fila['modalidad'],
@@ -151,22 +152,21 @@ class Modelo
         return $resultado;
     }
 
-    // (Ejercicio 4) Verificar si ya existe una corrección para un alumno y una prueba
-    function obtenerCorreccion($idAlumno, $idPrueba)
+    // (Ejercicio 4) Obtener corrección de un alumno para una prueba específica
+    function obtenerCorrecion($idP, $idA)
     {
         $resultado = null;
         try {
-            $consulta = $this->conexion->prepare(
-                'SELECT c.*, p.descripcion, p.puntuacion as max_puntos 
-                 FROM correccion c 
-                 INNER JOIN prueba p ON c.prueba = p.id 
-                 WHERE c.alumno = ? AND c.prueba = ?'
-            );
-            $params = array($idAlumno, $idPrueba);
+            $consulta = $this->conexion->prepare('SELECT * from correccion where alumno = ? and prueba = ?');
+            $params = array($idA, $idP);
             if ($consulta->execute($params)) {
                 if ($fila = $consulta->fetch()) {
-                    $prueba = new Prueba($fila['prueba'], null, null, $fila['descripcion'], $fila['max_puntos']);
-                    $resultado = new Correccion($fila['alumno'], $prueba, $fila['puntos'], $fila['comentario']);
+                    $resultado = new Correccion(
+                        $fila['alumno'],
+                        $fila['prueba'],
+                        $fila['puntos'],
+                        $fila['comentario']
+                    );
                 }
             }
         } catch (\Throwable $th) {
@@ -175,48 +175,57 @@ class Modelo
         return $resultado;
     }
 
-    // (Ejercicio 4) Guardar una corrección y actualizar la puntuación del alumno
-    function guardarCorreccion($alumno, $prueba, $puntos, $comentario)
+    // (Ejercicio 4) Crear una corrección y actualizar la puntuación del alumno
+    function crearCorreccion($idP, $idA, $puntos, $desc)
     {
+        $resultado = false;
         try {
             $this->conexion->beginTransaction();
 
             // Insertar la corrección
-            $consulta = $this->conexion->prepare(
-                'INSERT INTO correccion (alumno, prueba, puntos, comentario) VALUES (?, ?, ?, ?)'
-            );
-            $params = array($alumno, $prueba, $puntos, $comentario);
-            $consulta->execute($params);
-
-            // Actualizar la puntuación del alumno
-            $consulta = $this->conexion->prepare(
-                'UPDATE alumno SET puntuacion = puntuacion + ? WHERE id = ?'
-            );
-            $consulta->execute(array($puntos, $alumno));
-
-            $this->conexion->commit();
+            $consulta = $this->conexion->prepare('INSERT INTO correccion VALUES (?, ?, ?, ?)');
+            $params = array($idA, $idP, $puntos, $desc);
+            if ($consulta->execute($params)) {
+                if ($consulta->rowCount() == 1) {
+                    // Actualizar la puntuación del alumno
+                    $consulta = $this->conexion->prepare(
+                        'UPDATE alumno SET puntuacion = puntuacion + ? WHERE id = ?'
+                    );
+                    $params = array($puntos, $idA);
+                    if ($consulta->execute($params) && $consulta->rowCount() == 1) {
+                        $this->conexion->commit();
+                        $resultado = true;
+                    } else {
+                        $this->conexion->rollBack(); // Deshacer si algo falla
+                    }
+                }
+            }
         } catch (\Throwable $th) {
             $this->conexion->rollBack();
             echo $th->getMessage();
         }
+        return $resultado;
     }
 
-    // (Ejercicio 4) Obtener todas las correcciones de un alumno
-    function obtenerCorreccionesAlumno($idAlumno)
+    // (Ejercicio 4) Obtener todas las calificaciones de un alumno
+    function obtenerCalificaciones($idA)
     {
         $resultado = array();
         try {
             $consulta = $this->conexion->prepare(
-                'SELECT c.*, p.descripcion, p.puntuacion as max_puntos 
-                 FROM correccion c 
-                 INNER JOIN prueba p ON c.prueba = p.id 
-                 WHERE c.alumno = ?'
+                'SELECT * FROM correccion AS c
+                 INNER JOIN prueba AS p ON c.prueba = p.id
+                 WHERE alumno = ?'
             );
-            $params = array($idAlumno);
+            $params = array($idA);
             if ($consulta->execute($params)) {
                 while ($fila = $consulta->fetch()) {
-                    $prueba = new Prueba($fila['prueba'], null, null, $fila['descripcion'], $fila['max_puntos']);
-                    $resultado[] = new Correccion($fila['alumno'], $prueba, $fila['puntos'], $fila['comentario']);
+                    $resultado[] = new Correccion(
+                        $fila['alumno'],
+                        new Prueba($fila['prueba'], $fila['modalidad'], $fila['fecha'], $fila['descripcion'], $fila['puntuacion']),
+                        $fila['puntos'],
+                        $fila['comentario']
+                    );
                 }
             }
         } catch (\Throwable $th) {
@@ -225,17 +234,20 @@ class Modelo
         return $resultado;
     }
 
-    // (Ejercicio 5) Finalizar un alumno marcándolo como finalizado
-    function finalizarAlumno($idAlumno)
+    // (Ejercicio 5) Finalizar corrección del alumno
+    function finalizarCorreccion($idA)
     {
+        $resultado = false;
         try {
-            $consulta = $this->conexion->prepare(
-                'UPDATE alumno SET finalizado = true WHERE id = ?'
-            );
-            $consulta->execute(array($idAlumno));
+            $consulta = $this->conexion->prepare('UPDATE alumno SET finalizado = true WHERE id = ?');
+            $params = array($idA);
+            if ($consulta->execute($params) && $consulta->rowCount() == 1) {
+                $resultado = true;
+            }
         } catch (\Throwable $th) {
             echo $th->getMessage();
         }
+        return $resultado;
     }
 
     // (Ejercicio 6) Obtener los ganadores de cada modalidad
@@ -243,14 +255,10 @@ class Modelo
     {
         $resultado = array();
         try {
-            $consulta = $this->conexion->prepare('CALL obtenerGandadores()');
+            $consulta = $this->conexion->prepare('CALL obtenerGanadores()');
             if ($consulta->execute()) {
                 while ($fila = $consulta->fetch()) {
-                    $resultado[] = [
-                        'modalidad' => $fila['modalidad'],
-                        'nombre' => $fila['nombre'],
-                        'puntuacion' => $fila['puntuacion']
-                    ];
+                    $resultado[] = array($fila[0], $fila[1], $fila[2]);
                 }
             }
         } catch (\Throwable $th) {
@@ -259,12 +267,15 @@ class Modelo
         return $resultado;
     }
 
-    /**
-     * (Ejercicio 1) Obtener conexión actual
-     */
+    // Métodos getter y setter para conexión
     public function getConexion()
     {
         return $this->conexion;
     }
+
+    public function setConexion($conexion)
+    {
+        $this->conexion = $conexion;
+        return $this;
+    }
 }
-?>

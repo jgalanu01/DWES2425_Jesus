@@ -13,10 +13,8 @@ require_once 'controlador.php'; // (Ejercicio 1) Incluir el controlador para man
 
 <body>
     <div>
-        <!-- (Ejercicio 1) Mostrar mensaje de error si no hay conexión con la base de datos -->
-        <?php if ($bd->getConexion() == null): ?>
-            <h1 style='color:red;'>Error, no hay conexión con la BD</h1>
-        <?php endif; ?>
+        <!-- (Ejercicio 1) Mostrar mensaje de error si no hay conexión a la base de datos -->
+        <h1 style='color:red;'><?php echo (isset($error) ? $error : '') ?></h1>
     </div>
 
     <!-- (Ejercicio 1) Continuar solo si hay conexión -->
@@ -27,12 +25,12 @@ require_once 'controlador.php'; // (Ejercicio 1) Incluir el controlador para man
             <?php if (!isset($_SESSION['mod'])): ?>
                 <div>
                     <h1 style='color:blue;'>Modalidad</h1>
-                    <label for="modalidad">Selecciona la Modalidad</label><br />
+                    <label for="modalidad">Modalidad</label><br />
+
+                    <!-- (Ejercicio 1) Rellenar el select con las modalidades disponibles -->
                     <select name="modalidad">
                         <?php foreach ($mod as $m): ?>
-                            <option value="<?= $m->getId(); ?>">
-                                <?= $m->getModalidad(); ?>
-                            </option>
+                            <option value="<?= $m->getId(); ?>"><?= $m->getModalidad(); ?></option>
                         <?php endforeach; ?>
                     </select>
                     <button type="submit" name="selModalidad">Seleccionar Modalidad</button>
@@ -43,15 +41,15 @@ require_once 'controlador.php'; // (Ejercicio 1) Incluir el controlador para man
             <?php if (isset($_SESSION['mod']) && !isset($_SESSION['alumno'])): ?>
                 <div>
                     <h1 style='color:blue;'>Alumno</h1>
-                    <label for="alumno">Selecciona el Alumno</label><br />
+                    <label for="alumno">Alumno</label><br />
+
+                    <!-- (Ejercicio 2) Rellenar el select con los alumnos de la modalidad seleccionada -->
                     <select name="alumno">
                         <?php
                         $alumnos = $bd->obtenerAlumnosModalidad($_SESSION['mod']->getId());
                         foreach ($alumnos as $a):
                         ?>
-                            <option value="<?= $a->getId(); ?>">
-                                <?= $a->getNombre(); ?>
-                            </option>
+                            <option value="<?= $a->getId(); ?>"><?= $a->getNombre(); ?></option>
                         <?php endforeach; ?>
                     </select>
                     <button type="submit" name="selAlumno">Seleccionar Alumno</button>
@@ -64,20 +62,19 @@ require_once 'controlador.php'; // (Ejercicio 1) Incluir el controlador para man
                     <h1 style='color:blue;'>Corrección</h1>
                     <h2 style='color:green;'>
                         <!-- (Ejercicio 3) Mostrar información de la modalidad y del alumno -->
-                        <?= $_SESSION['mod']->getModalidad() . ' - ' . $_SESSION['alumno']->getNombre(); ?>
-                        <?= $_SESSION['alumno']->getFinalizado() ? '(Definitiva)' : '(Provisional)'; ?>
+                        <?= $_SESSION['mod']->getModalidad() . ' - ' . $_SESSION['alumno']->getNombre() . ' - ' . $_SESSION['alumno']->getPuntuacion(); ?>
+                        <?= $_SESSION['alumno']->getFinalizado() ? '(Finalizado)' : '(Provisional)'; ?>
                     </h2>
-                    <!-- (Ejercicio 3) Botón para cambiar el alumno -->
-                    <button type="submit" name="cambiarA">Cambiar Alumno</button>
-                    <!-- (Ejercicio 3) Botón para cambiar la modalidad -->
+                    <!-- (Ejercicio 3) Botones para cambiar alumno o modalidad -->
                     <button type="submit" name="cambiarM">Cambiar Modalidad</button>
+                    <button type="submit" name="cambiarA">Cambiar Alumno</button>
 
-                    <!-- (Ejercicio 4) Calificar pruebas -->
+                    <!-- (Ejercicio 4) Formulario para calificar pruebas -->
                     <table>
                         <tr>
                             <td><label for="prueba">Prueba</label><br /></td>
                             <td><label for="puntos">Puntos</label><br /></td>
-                            <td><label for="comentario">Comentario</label><br /></td>
+                            <td><label for="comentario">Comentario</label></td>
                             <td></td>
                         </tr>
                         <tr>
@@ -98,50 +95,58 @@ require_once 'controlador.php'; // (Ejercicio 1) Incluir el controlador para man
                             <td><button type="submit" name="guardar">Guardar</button></td>
                         </tr>
                     </table>
+                </div>
 
-                    <!-- (Ejercicio 4) Mostrar calificaciones del alumno -->
-                    <h1 style='color:blue;'>Calificaciones del Alumno</h1>
+                <!-- (Ejercicio 4) Mostrar calificaciones del alumno -->
+                <div>
+                    <h1 style='color:blue;'>Calificaciones del alumno</h1>
                     <table border="1" rules="all" width="50%">
                         <tr>
                             <td><b>Prueba</b></td>
+                            <td><b>Puntos Asignados</b></td>
                             <td><b>Puntos Obtenidos</b></td>
                             <td><b>Comentario</b></td>
                         </tr>
                         <?php
-                        $correcciones = $bd->obtenerCorreccionesAlumno($_SESSION['alumno']->getId());
-                        foreach ($correcciones as $c):
+                        $calificaciones = $bd->obtenerCalificaciones($_SESSION['alumno']->getId());
+                        foreach ($calificaciones as $c):
                         ?>
                             <tr>
                                 <td><?= $c->getPrueba()->getDescripcion(); ?></td>
+                                <td><?= $c->getPrueba()->getPuntuacion(); ?></td>
                                 <td><?= $c->getPuntos(); ?></td>
                                 <td><?= $c->getComentario(); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </table>
-
-                    <!-- (Ejercicio 5) Botón para finalizar la corrección -->
+                    <!-- (Ejercicio 5) Botón para finalizar corrección -->
                     <button type="submit" name="finalizar">Finalizar Corrección</button>
                 </div>
             <?php endif; ?>
-
-            <!-- (Ejercicio 6) Mostrar ganadores de la competición -->
-            <h1 style='color:blue;'>Ganadores de la Competición</h1>
-            <table border="1" rules="all" width="50%">
-                <tr>
-                    <td><b>Modalidad</b></td>
-                    <td><b>Nombre del Ganador</b></td>
-                    <td><b>Puntuación</b></td>
-                </tr>
-                <?php foreach ($ganadores as $g): ?>
-                    <tr>
-                        <td><?= $g['modalidad']; ?></td>
-                        <td><?= $g['nombre']; ?></td>
-                        <td><?= $g['puntuacion']; ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </table>
         </form>
     <?php endif; ?>
+
+    <!-- (Ejercicio 6) Mostrar los ganadores -->
+    <div>
+        <h1 style='color:blue;'>Ganadores</h1>
+        <table border="1" rules="all" width="50%">
+            <tr>
+                <td><b>Modalidad</b></td>
+                <td><b>Nombre</b></td>
+                <td><b>Puntuación</b></td>
+            </tr>
+            <?php
+            $ganadores = $bd->obtenerGanadores();
+            foreach ($ganadores as $g):
+            ?>
+                <tr>
+                    <td><?= $g[0]; ?></td>
+                    <td><?= $g[1]; ?></td>
+                    <td><?= $g[2]; ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    </div>
 </body>
 
 </html>
