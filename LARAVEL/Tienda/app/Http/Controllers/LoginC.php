@@ -13,8 +13,29 @@ class LoginC extends Controller
        return view('usuarios/login'); //Ruta usuarios/login.blade.php
 
     }
-    function loguear(){
-        echo 'proceso de logueo';
+    function loguear(Request $request){
+        //Validar
+        $request->validate(
+            [
+            'email' =>'required|email:rfc,dns',
+            'ps'=>'required'
+        ]
+        );
+
+        //Crear array con us y ps
+
+        $credenciales=['email'=>$request->email,'password'=>$request->ps];
+        //Validación de credenciales 
+        if(Auth::attempt($credenciales)){
+            //Reiniciamos la sesión
+            $request->session()->regenerate();
+            //Redirigimos a inicio 
+            return redirect()->route('inicio');
+        }
+        else{
+            return back()->with('mensaje','Datos incorrectos');
+        }
+      
         
     }
     function vistaRegistro(){
@@ -34,7 +55,7 @@ class LoginC extends Controller
     //Si no hay errores en las validaciones, creamos el usuario y lo autenticamos
     $u=new User();
     //Rellenamos los campos del usuario con los datos del formulario
-    $u->nombre=$request->nombre;
+    $u->name=$request->nombre;
     $u->email=$request->email;
     $u->password= Hash::make($request->ps);
     //Crear usuario: Hace insert en users
