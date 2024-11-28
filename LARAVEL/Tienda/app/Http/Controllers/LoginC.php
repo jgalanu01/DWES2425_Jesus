@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -73,7 +74,8 @@ class LoginC extends Controller
      }
     }
     function cerrarSesion(){
-        echo 'Cerrar sesion';
+        Auth::logout();
+        $return = redirect()->route('inicio');
         
     }
 
