@@ -20,6 +20,7 @@ Route::controller(LoginC::class)->group(
 
 
 
+
     }
 
 );
@@ -27,7 +28,9 @@ Route::controller(LoginC::class)->group(
 Route::controller(ProductosC::class)->group(
     function(){
         Route::get('inicio', 'verProductos')->name('inicio'); 
-        ROute::post('addCarrito', 'addCarrito')->name('addCarrito');
+        Route::post('addCarrito', 'addCarrito')->name('addCarrito');
+        Route::get('cesta', 'verCesta')->name('cesta');
+
           
        
     }

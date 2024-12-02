@@ -17,53 +17,47 @@
 @endif
 
 @section('main')
-
 <style>
-    /* Estilo general de la tabla */
+    /* Estilo de la tabla */
     .custom-table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 20px;
-        background-color: #fafafa;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
     /* Encabezado de la tabla */
     .custom-table thead {
-        background-color: #3b3b3b; /* Gris oscuro */
-        color: white;
-        text-transform: uppercase;
+        background-color: #1e2a38; /* Color oscuro */
+        color: #fff;
+        font-size: 1.1em;
     }
 
     .custom-table th, .custom-table td {
-        padding: 12px 18px;
+        padding: 12px 16px;
         text-align: center;
         border: 1px solid #ddd;
-        font-size: 1rem;
     }
 
-    /* Filas alternadas */
-    .custom-table tbody tr:nth-child(odd) {
-        background-color: #f4f4f4;
+    /* Estilo de las filas */
+    .custom-table tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
     }
 
-    /* Efecto hover sobre las filas */
     .custom-table tbody tr:hover {
-        background-color: #d6f5d6; /* Verde suave al pasar el ratón */
+        background-color: #e1e1e1; /* Fondo gris claro al pasar el ratón */
     }
 
-    /* Estilo de las imágenes */
+    /* Estilo para las imágenes */
     .custom-table td img {
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 10px;
+        transition: transform 0.3s ease;
     }
 
     .custom-table td img:hover {
-        transform: scale(1.05); /* Zoom de la imagen */
-        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+        transform: scale(1.1); /* Aumenta el tamaño de la imagen al pasar el ratón */
     }
 
+    
 
     .custom-btn:hover {
         background-color: #45a049;
@@ -74,51 +68,53 @@
         background-color: #28a745;
         color: white;
         font-weight: bold;
-        padding: 12px;
+        padding: 10px;
         margin-bottom: 20px;
-        text-align: center;
     }
 
     .alert-danger {
         background-color: #dc3545;
         color: white;
         font-weight: bold;
-        padding: 12px;
+        padding: 10px;
         margin-bottom: 20px;
-        text-align: center;
     }
+
 </style>
 
 <table class="custom-table">
     <thead>
         <tr>
             <th scope="col">Id</th>
-            <th scope="col">Nombre</th>
-            <th scope="col">Precio</th>
-            <th scope="col">Stock</th>
+            <th scope="col">Producto</th>
+            <th scope="col">Precio Unitario</th>
+            <th scope="col">Cantidad</th>
+            <th scope="col">Precio Total</th>
             <th scope="col">Imagen</th>
-            <th scope="col">Comprar</th>
+            <th scope="col">Eliminar</th>
         </tr>
     </thead>
     <tbody>
-        @foreach($productos as $p)
+        @foreach($productosC as $p)
         <tr>
             <td>{{ $p->id }}</td>
-            <td>{{ $p->nombre }}</td>
-            <td>{{ number_format($p->precio, 2) }} €</td>
-            <td>{{ $p->stock }}</td>
-            <td><img src="{{ asset('img/productos/'.$p->imagen) }}" alt="{{ $p->id }}" width="50px"></td>
+            <td>{{ $p->producto->nombre }}</td>
+            <td>{{ number_format($p->precioU, 2) }} €</td>
+            <td>{{ $p->cantidad }}</td>
+            <td>{{ number_format($p->cantidad * $p->precioU, 2) }} €</td>
+            <td>
+                <img src="{{ asset('img/productos/'.$p->producto->imagen) }}" alt="{{ $p->id }}" width="50px">
+            </td>
             <form action="{{ route('addCarrito', $p->id) }}" method="post">
                 @csrf
                 <td>
                     <button type="submit" name="btnAdd" value="{{ $p->id }}" class="custom-btn">
-                        <img src="{{ asset('img/cesta.jpg') }}" alt="cesta" width="35px">
+                        <img src="{{ asset('img/cesta.jpg') }}" alt="cesta" width="30px">
                     </button>
                 </td>
             </form>
         </tr>
         @endforeach
-    </tbody> 
+    </tbody>
 </table>
-
 @endsection
