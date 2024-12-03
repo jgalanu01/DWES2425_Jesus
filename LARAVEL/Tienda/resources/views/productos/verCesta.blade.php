@@ -1,22 +1,3 @@
-@extends('plantilla');
-
-@if(session('mensaje'))
-@section('info')
-<div class="alert alert-success" role="alert">
-    {{ session('mensaje') }}
-</div>
-@endsection
-@endif
-
-@if(session('error'))
-@section('error')
-<div class="alert alert-danger" role="alert">
-    {{ session('error') }}
-</div>
-@endsection
-@endif
-
-@section('main')
 <style>
     /* Estilo de la tabla */
     .custom-table {
@@ -82,6 +63,32 @@
 
 </style>
 
+
+
+
+@extends('plantilla');
+
+@if(session('mensaje'))
+@section('info')
+<div class="alert alert-success" role="alert">
+    {{ session('mensaje') }}
+</div>
+@endsection
+@endif
+
+@if(session('error'))
+@section('error')
+<div class="alert alert-danger" role="alert">
+    {{ session('error') }}
+</div>
+@endsection
+@endif
+
+@section('main')
+
+
+
+
 <table class="custom-table">
     <thead>
         <tr>
@@ -97,24 +104,28 @@
     <tbody>
         @foreach($productosC as $p)
         <tr>
+            <form action="{{ route('tratarCarrito',[$p->id])}}" method="post">
+                @csrf
             <td>{{ $p->id }}</td>
             <td>{{ $p->producto->nombre }}</td>
             <td>{{ number_format($p->precioU, 2) }} €</td>
-            <td>{{ $p->cantidad }}</td>
+            <td><input type="number" name="cantidad" min="1" value="{{$p->cantidad}}" onchange="submit"/></td>
+
             <td>{{ number_format($p->cantidad * $p->precioU, 2) }} €</td>
             <td>
                 <img src="{{ asset('img/productos/'.$p->producto->imagen) }}" alt="{{ $p->id }}" width="50px">
             </td>
-            <form action="{{ route('addCarrito', $p->id) }}" method="post">
-                @csrf
+           
                 <td>
-                    <button type="submit" name="btnAdd" value="{{ $p->id }}" class="custom-btn">
+                    <button type="submit" name="btnBorrar" value="{{ $p->id }}" class="custom-btn">
                         <img src="{{ asset('img/cesta.jpg') }}" alt="cesta" width="30px">
                     </button>
-                </td>
+               </td>
             </form>
         </tr>
+   
         @endforeach
     </tbody>
 </table>
+
 @endsection

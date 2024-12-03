@@ -35,32 +35,29 @@ class ProductosC extends Controller
             if ($p->stock > 0) {
                 //Comprobamos si el producto está ya en la cesta
                 $productoC = Carrito::where('producto_id', $p->id)
-                ->where('user_id',Auth::user()->id) ->first();
+                    ->where('user_id', Auth::user()->id)->first();
 
-                if($productoC==null){
+                if ($productoC == null) {
                     //Crear prudcto en el carrito
                     $productoC = new Carrito;
-                    $productoC->producto_id=$p->id;
-                    $productoC->cantidad=1;
-                    $productoC->precioU=$p->precio;
-                    $productoC->user_id=Auth::user()->id;
-                   
-                }else{
+                    $productoC->producto_id = $p->id;
+                    $productoC->cantidad = 1;
+                    $productoC->precioU = $p->precio;
+                    $productoC->user_id = Auth::user()->id;
+                } else {
                     //Incrementar en 1 la cantidad
 
-                    $productoC->cantidad+=1;
-                    $productoC->precioU=$p->precio;
+                    $productoC->cantidad += 1;
+                    $productoC->precioU = $p->precio;
                 }
 
                 //Guardamos cambios: Hacemos un INSERT o un UPDATE
 
-                if($productoC->save()){
+                if ($productoC->save()) {
                     return back()->with('mensaje', 'Producto añadido a la cesta ');
-                }
-                else{
+                } else {
                     return back()->with('error', 'No se pudo añadir el producto a la cesta');
                 }
-                
             } else {
                 return back()->with('error', 'No hay stock del producto ' . $p->nombre);
             }
@@ -68,10 +65,49 @@ class ProductosC extends Controller
             return back()->with('error', 'No hay producto' . $request->btnAdd);
         }
     }
-    function verCesta(){
+    function verCesta()
+    {
         //Obtener los productos en el carrito del usuario 
-        $productosC=Carrito::where('user_id',Auth::user()->id)->get();
+        $productosC = Carrito::where('user_id', Auth::user()->id)->get();
         //Cargar la vista de la cesta 
-        return view ('productos/verCesta',compact('productosC')); //El compact pasa a la vista una variable cuyo contenido es $productosC
+        return view('productos/verCesta', compact('productosC')); //El compact pasa a la vista una variable cuyo contenido es $productosC
+    }
+
+    function tratarCarrito(Request $request, $idP)
+    {
+        // Parámetros porque viene por POST
+        if (isset($request->btnBorrar)) {
+            // Obtener el producto en el carrito a borrar
+            $p = Carrito::find($request->btnBorrar);
+            if ($p != null) {
+                // Borrar de la tabla carrito
+                if ($p->delete()) {
+                    return back()->with('mensaje', 'Producto borrado del carrito');
+                } else {
+                    return back()->with('error', 'No se pudo borrar el producto del carrito');
+                }
+            } else {
+                return back()->with('error', 'El producto no está en el carrito');
+            }
+        } elseif (isset($request->cantidad) and $request->cantidad >= 0) {
+            // Comprobar si se ha modificado la cantidad del producto
+            $p = Carrito::find($idP);
+            if ($p->cantidad != $request->cantidad) {
+                // Comprobar si hay stock 
+                if ($p->producto->stock >= $request->cantidad) {
+                    // Modificar el producto en el carrito
+                    $p->cantidad = $request->cantidad;
+                    if ($p->save()) {
+                        return back()->with('mensaje', 'Cantidad modificada');
+                    } else {
+                        return back()->with('error', 'No se ha modificado la cantidad');
+                    }
+                } else {
+                    return back()->with('error', 'No hay stock suficiente');
+                }
+            }
+        }
+
+        return back();
     }
 }
