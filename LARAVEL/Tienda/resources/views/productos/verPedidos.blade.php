@@ -85,13 +85,6 @@
 @endif
 
 @section('main')
-
-<form action="{{route('crearPedido')}}" method="post">
-    @csrf
-    <button type="submit">Comprar</button>
-
-</form>
-
 <table class="custom-table">
     <thead>
         <tr>
@@ -101,29 +94,20 @@
             <th scope="col">Cantidad</th>
             <th scope="col">Precio Total</th>
             <th scope="col">Imagen</th>
-            <th scope="col">Eliminar</th>
         </tr>
     </thead>
     <tbody>
-        @foreach($productosC as $p)
+        @foreach($pedidos as $p)
         <tr>
-            <form action="{{ route('tratarCarrito',[$p->id])}}" method="post">
-                @csrf
             <td>{{ $p->id }}</td>
             <td>{{ $p->producto->nombre }}</td>
-            <td>{{ number_format($p->precioU, 2) }} €</td>
-            <td><input type="number" name="cantidad" min="1" value="{{$p->cantidad}}" onchange="submit()"/></td>
-
+            <td>{{ $p->precioU }}</td>
+            <td>{{ $p->cantidad }}</td>
             <td>{{ number_format($p->cantidad * $p->precioU, 2) }} €</td>
             <td>
                 <img src="{{ asset('img/productos/'.$p->producto->imagen) }}" alt="{{ $p->id }}" width="50px">
             </td>
-           
-                <td>
-                    <button type="submit" name="btnBorrar" value="{{ $p->id }}" class="custom-btn">
-                        <img src="{{ asset('img/papelera.jpg') }}" alt="cesta" width="70px">
-                    </button>
-               </td>
+
             </form>
         </tr>
    

@@ -112,7 +112,7 @@
                 @csrf
                 <td>
                     <button type="submit" name="btnAdd" value="{{ $p->id }}" class="custom-btn">
-                        <img src="{{ asset('img/cesta.jpg') }}" alt="cesta" width="35px">
+                        <img src="{{ asset('img/cesta.jpg') }}" alt="cesta" width="50px">
                     </button>
                 </td>
             </form>
