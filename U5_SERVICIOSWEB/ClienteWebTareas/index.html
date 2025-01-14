@@ -87,6 +87,27 @@
                 }
             )
         }
+
+        function borrarTarea(id){
+            const url=`http://localhost/DWES2425_Jesus/U5_SERVICIOSWEB/APITareas/public/tareas/${id}`;
+            if(confirm(`¿Estás seguro de eliminar la tarea con id ${id}?`)){
+
+            
+            axios.delete(url)
+            .then(
+                response=>{
+                    alert(response.data);
+                    cargarTareas();
+                }
+            )
+            .catch(
+                error=>{
+                    console.error(error.response.data);
+                    alert(`Error:${error.response.data} Estado:${error.response.status}`);
+                }
+            );
+            }
+        }
         function cargarTareas(){
             const url='http://localhost/DWES2425_Jesus/U5_SERVICIOSWEB/APITareas/public/tareas';
             axios.get(url)
