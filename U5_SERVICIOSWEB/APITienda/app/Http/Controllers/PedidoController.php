@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pedido;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class PedidoController extends Controller
 {
@@ -13,7 +15,14 @@ class PedidoController extends Controller
      */
     public function index()
     {
-        //
+        try{
+            //Devolver pedidos de usuario logueado
+            //return User::find(Auth::user()->id)->pedidos();
+            return Pedido::where('user_id',Auth::user()->id)->get();
+
+        }catch(\Throwable $th){
+            return response()->json(['Error'.$th->getMessage()],500);
+        }
     }
 
     /**
