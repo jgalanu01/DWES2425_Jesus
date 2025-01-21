@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pedido;
+use App\Models\Producto;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
 
 class PedidoController extends Controller
 {
@@ -30,7 +34,45 @@ class PedidoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+           //Validaciones
+        $request->validate([
+            'producto'=>'required',
+            'cantidad'=>'required'
+            ]);
+       try {
+        //Crear pedido
+        DB::transaction(function () use ($request) {
+            //Obtener el producto y validar stock
+            $p=Producto::find($request->producto);
+            if($p!=null and $p->stock>=$request->cantidad){
+                $pedido=new Pedido();
+                $pedido->producto_id=$p->id;
+                $pedido->cantidad=$request->cantidad;
+                $pedido->precioU=$p->precio;
+                $pedido->user_id=Auth::user()->id;
+
+                //Crear pedido
+                if($pedido->save()){
+                    //Actualizar stock del producto
+                    $p->stock-=$request->cantidad;
+                    if($p->save()){
+                       // return response()->json ($pedido,200);
+                    }
+                }
+               
+
+            }
+            else{
+                throw new Exception ('El producto no existe o no hay stock');
+            }
+            
+        });
+        return response()->json ('Pedido creado',200);
+        
+       } catch (\Throwable $th) {
+        return response()->json(['Error'.$th->getMessage()],500);
+        
+       }
     }
 
     /**
