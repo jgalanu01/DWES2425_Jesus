@@ -19,8 +19,8 @@
 
         </div>
         <div>
+            <h3>Pedidos</h3>
             <table id="pedidos">
-
             </table>
            
         </div>
@@ -40,15 +40,75 @@
         //Todas las peticiones van a ir con token de autenticacioón
         axios.defaults.headers.common['Authorization']=`Bearer ${token}`
         cargarProductos();
+        cargarPedidos();
+    }
+
+    function cargarPedidos(){
+        const url='http://localhost/DWES2425_Jesus/U5_SERVICIOSWEB/APITienda/public/api/pedidos'
+        axios.get(url)
+        .then(response=>{
+            var pedidos=response.data.data;
+            var tablaP=document.getElementById('pedidos');
+            tablaP.innerHTML= '<tr><td>ID</td><td>Producto</td><td>Cantidad</td><td>Precio</td><td>Imagen</td></tr>'
+            pedidos.forEach(p=>{
+                var fila=document.createElement('tr')
+                fila.innerHTML=`<td>${p.id}</td>
+                <td>${p.producto}</td>
+                <td>${p.cantidad}</td>
+                <td>${p.precioU}</td>
+                <td><img src="http://localhost/DWES2425_Jesus/LARAVEL/Tienda/public/img/productos/${p.imagen}" width="30px"/></td>`
+                tablaP.appendChild(fila);
+            });
+        })
+        .catch(error=>{
+            console.error(error)
+            alert('Error:'+error.status+' '+error.response.data);
+        });
+
+    }
+
+    function comprar(id){
+        const url='http://localhost/DWES2425_Jesus/U5_SERVICIOSWEB/APITienda/public/api/pedidos';
+        const datos={
+            producto:id,
+            cantidad:1
+
+        }
+        axios.post(url,datos)
+        .then(response=>{
+            alert('Pedido creado');
+            cargarProductos();
+            cargarPedidos();
+           
+        })
+        .catch(error=>{
+            console.error(error)
+            alert('Error:'+error.status+' '+error.response.data)
+        });
     }
 
     function cargarProductos(){
         const url='http://localhost/DWES2425_Jesus/U5_SERVICIOSWEB/APITienda/public/api/productos'
         axios.get(url)
         .then(response=>{
+            var productos=response.data;
+            var tablaP=document.getElementById('productos');
+            tablaP.innerHTML='<tr><td>ID</td><td>Nombre</td><td>Precio</td><td>Stock</td><td>Imagen</td><td>Acciones</td></tr>';
+            productos.forEach(p=>{
+                var fila=document.createElement('tr')
+                fila.innerHTML=`<td>${p.id}</td>
+                    <td>${p.nombre}</td>
+                    <td>${p.precio}</td>
+                    <td>${p.stock}</td>
+                    <td><img src="http://localhost/DWES2425_Jesus/LARAVEL/Tienda/public/img/productos/${p.imagen}" width="30px"/></td>
+                    <td><button type="button" onclick="comprar(${p.id})">Comprar</button></td>`
+                    
+
+                    tablaP.appendChild(fila);
 
 
-    })
+    });
+})
     .catch(error=>{
         console.error(error)
         alert('Error al cargar los productos');
