@@ -44,7 +44,7 @@
     }
 
     function cargarPedidos(){
-        const url='http://localhost/DWES2425_Jesus/U5_SERVICIOSWEB/APITienda/public/api/pedidos'
+        const url='http://18.205.58.175/DWES2425_Jesus/U5_SERVICIOSWEB/APITienda/public/api/pedidos'
         axios.get(url)
         .then(response=>{
             var pedidos=response.data.data;
@@ -56,7 +56,7 @@
                 <td>${p.producto}</td>
                 <td>${p.cantidad}</td>
                 <td>${p.precioU}</td>
-                <td><img src="http://localhost/DWES2425_Jesus/LARAVEL/Tienda/public/img/productos/${p.imagen}" width="30px"/></td>`
+                <td><img src="http://18.205.58.175/DWES2425_Jesus/LARAVEL/Tienda/public/img/productos/${p.imagen}" width="30px"/></td>`
                 tablaP.appendChild(fila);
             });
         })
@@ -68,7 +68,7 @@
     }
 
     function comprar(id){
-        const url='http://localhost/DWES2425_Jesus/U5_SERVICIOSWEB/APITienda/public/api/pedidos';
+        const url='http:/18.205.58.175/DWES2425_Jesus/U5_SERVICIOSWEB/APITienda/public/api/pedidos';
         const datos={
             producto:id,
             cantidad:1
@@ -88,7 +88,7 @@
     }
 
     function cargarProductos(){
-        const url='http://localhost/DWES2425_Jesus/U5_SERVICIOSWEB/APITienda/public/api/productos'
+        const url='http:/18.205.58.175/DWES2425_Jesus/U5_SERVICIOSWEB/APITienda/public/api/productos'
         axios.get(url)
         .then(response=>{
             var productos=response.data;
@@ -100,7 +100,7 @@
                     <td>${p.nombre}</td>
                     <td>${p.precio}</td>
                     <td>${p.stock}</td>
-                    <td><img src="http://localhost/DWES2425_Jesus/LARAVEL/Tienda/public/img/productos/${p.imagen}" width="30px"/></td>
+                    <td><img src="http://18.205.58.175/DWES2425_Jesus/LARAVEL/Tienda/public/img/productos/${p.imagen}" width="30px"/></td>
                     <td><button type="button" onclick="comprar(${p.id})">Comprar</button></td>`
                     
 
@@ -117,7 +117,7 @@
 }
 
     function salir(){
-        const url='http://localhost/DWES2425_Jesus/U5_SERVICIOSWEB/APITienda/public/api/logout'
+        const url='http://18.205.58.175/DWES2425_Jesus/U5_SERVICIOSWEB/APITienda/public/api/logout'
 
         axios.post(url)
         .then(response=>{
