@@ -31,7 +31,7 @@
 
     <script>
         function crearTarea() {
-            const url = 'http://18.205.58.175/DWES2425_Jesus/U5_SERVICIOSWEB/APITareas/public/tareas';
+            const url = 'http://localhost/DWES2425_Jesus/U5_SERVICIOSWEB/APITareas/public/tareas';
             if (document.getElementById('fecha').value == '' ||
                 document.getElementById('hora').value == '' ||
                 document.getElementById('desc').value == '' ||
@@ -71,7 +71,7 @@
 
         }
         function finalizarTarea(id) {
-            const url = `http://18.205.58.175/DWES2425_Jesus/U5_SERVICIOSWEB/APITareas/public/tareas/${id}`;
+            const url = `http://localhost/DWES2425_Jesus/U5_SERVICIOSWEB/APITareas/public/tareas/${id}`;
             datos = {
                 finalizada: true
             }
@@ -91,7 +91,7 @@
         }
 
         function borrarTarea(id) {
-            const url = `http:/18.205.58.175/DWES2425_Jesus/U5_SERVICIOSWEB/APITareas/public/tareas/${id}`;
+            const url = `http://localhost/DWES2425_Jesus/U5_SERVICIOSWEB/APITareas/public/tareas/${id}`;
             if (confirm(`¿Estás seguro de eliminar la tarea con id ${id}?`)) {
 
 
@@ -111,7 +111,7 @@
             }
         }
         function cargarTareas() {
-            const url = 'http://18.205.58.175/DWES2425_Jesus/U5_SERVICIOSWEB/APITareas/public/tareas';
+            const url = 'http://localhost/DWES2425_Jesus/U5_SERVICIOSWEB/APITareas/public/tareas';
             axios.get(url)
                 .then(
                     response => {
