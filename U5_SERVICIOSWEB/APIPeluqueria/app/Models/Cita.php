@@ -14,9 +14,5 @@ class Cita extends Model
 
 
 
-    // Método para obtener el total de la cita
-    public function getTotalAttribute()
-    {
-        return $this->detalleCitas->sum('precio');
-    }
+   
 }

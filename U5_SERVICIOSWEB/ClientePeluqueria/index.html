@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div>
+        <table id="citas">
+
+        </table>
+    </div>
+    <div>
+        <table id="detalle">
+
+        </table>
+    </div>
+    <script>
+        const urlAPI='http://localhost/DWES2425_Jesus/U5_SERVICIOSWEB/APIPeluqueria/public';
+        cargarCitas();
+
+      
+        function cargarCitas() {
+            const url=urlAPI+'citas';
+            axios.get(url)
+            .then(response=>{
+                const tabla=document.getElementById('citas');
+                tabla.innerHTML='<tr><th>Fecha</th><th>Hora</th><th>Cliente</th><th>Finalizada</th><th>Acciones</th></tr>';
+                citas=response.data;
+                citas.forEach(c=>{
+                    const fila=document.createElement('tr');
+                    fina.innerHTML=`<td>${c.id}</td>
+                    <td>${c.fecha}</td>
+                    <td>${c.hora}</td>
+                    <td>${c.cliente}</td>
+                    <td>${c.finalizada}</td>
+                    <td><button type="button" name="detalle ${c.id}">Detalle</button></td>`;
+                    tabla.appendChild(fila);
+                })
+            })
+            .catch();
+            
+
+        }
+
+        function detalleCita(id) {
+            const url=urlAPI+'detalleCita';
+            axios.get(url)
+            .then(response=>{
+                const tabla=document.getElementById('detalle');
+                tabla.innerHTML='<tr><th>Id</th><th>Cita</th><th>Servicio</th><th>Precio</th><th>Acciones</th></tr>';
+                detalle=response.data;
+                detalle.forEach(d=>{
+                    const fila=document.createElement('tr');
+                    fila.innerHTML=`<td>${d.id}</td>
+                    <td>${d.cita_id}</td>
+                    <td>${d.servicio_id}</td>
+                    <td>${d.precio}</td>
+                    <td><button type="button" name="eliminar ${d.id}">Eliminar</button></td>`;
+                    tabla.appendChild(fila);
+                })
+            })
+            .catch();            
+        }
+
+            }
+
+        }
+    </script>
+    
+    
+</body>
+</html>

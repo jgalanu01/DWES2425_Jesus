@@ -10,7 +10,7 @@ class CitaController extends Controller
     // Ver todas las citas del usuario logueado
     public function index()
     {
-        $citas = Cita::all(); // Obtiene todas las citas
+        $citas = Cita::all(); 
 
         return response()->json($citas);
     }
@@ -24,16 +24,39 @@ class CitaController extends Controller
             'cliente' => 'required|string|max:255',
         ]);
 
-        $cita = new Cita();
-        $cita->fecha = $request->fecha;
-        $cita->hora = $request->hora;
-        $cita->cliente = $request->cliente;
-        $cita->finalizada = false;
+        try {
+            $c = new Cita();
+            $c->fecha = $request->fecha;
+            $c->hora = $request->hora;
+            $c->cliente = $request->cliente;
 
-        if ($cita->save()) {
-            return response()->json($cita, 201); // Retorna la cita creada con código 201
-        } else {
-            return response()->json(['error' => 'No se pudo crear la cita'], 500);
+            if ($c->save()) {
+                return response()->json($c);
+            } else {
+                return response()->json(['error' => 'Error al guardar la cita'], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+
+    // Detalle de una cita
+    public function detalleCita(Request $request)
+    {
+        $request->validate([
+            'id' => 'required'
+        ]);
+
+        try {
+            $c = Cita::find($request->id);
+
+            if (!$c) {
+                return response()->json(['error' => 'Cita no encontrada'], 404);
+            }
+
+            return response()->json($c->detalle_citas);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => 'Error: ' . $th->getMessage()], 500);
         }
     }
 
