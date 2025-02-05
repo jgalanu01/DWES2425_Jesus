@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Detalle_cita extends Model
 {
     //
-    function cita (){
+    function cita(){
         return $this->belongsTo(Cita::class);
     }
-    function servicio (){
+    function servicio(){
         return $this->belongsTo(Servicio::class);
     }
 }

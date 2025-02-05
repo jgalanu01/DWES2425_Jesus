@@ -3,109 +3,141 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cita;
+use App\Models\Detalle_cita;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class CitaController extends Controller
 {
-    // Ver todas las citas del usuario logueado
+    /**
+     * Obtener todas las citas con el importe total (sin detalles).
+     */
     public function index()
     {
-        $citas = Cita::all(); 
-
-        return response()->json($citas);
+        try {
+            $citas = Cita::all();
+            foreach ($citas as $cita) {
+                $cita->importe_total = $cita->detalle_citas()->sum('precio');
+            }
+            return response()->json($citas);
+        } catch (\Throwable $th) {
+            return response()->json('Error: ' . $th->getMessage());
+        }
     }
 
-    // Crear una nueva cita
+    /**
+     * Crear una nueva cita.
+     */
     public function store(Request $request)
     {
         $request->validate([
-            'fecha' => 'required|date',
-            'hora' => 'required|date_format:H:i',
-            'cliente' => 'required|string|max:255',
+            'fecha' => 'required',
+            'hora' => 'required',
+            'cliente' => 'required'
         ]);
-
         try {
             $c = new Cita();
             $c->fecha = $request->fecha;
             $c->hora = $request->hora;
             $c->cliente = $request->cliente;
-
-            if ($c->save()) {
-                return response()->json($c);
-            } else {
-                return response()->json(['error' => 'Error al guardar la cita'], 400);
-            }
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
+            $c->save();
+            return response()->json($c);
+        } catch (\Throwable $th) {
+            return response()->json('Error: ' . $th->getMessage());
         }
     }
 
-    // Detalle de una cita
-    public function detalleCita(Request $request)
+    /**
+     * Obtener el detalle de una cita.
+     */
+    public function detalleCita($id)
+    {
+        try {
+            $cita = Cita::find($id);
+            if (!$cita) {
+                return response()->json('Cita no encontrada');
+            }
+            return response()->json($cita->detalle_citas());
+        } catch (\Throwable $th) {
+            return response()->json('Error: ' . $th->getMessage());
+        }
+    }
+
+    /**
+     * Agregar un detalle a una cita (solo si no está finalizada).
+     */
+    public function agregarDetalle(Request $request)
     {
         $request->validate([
-            'id' => 'required'
+            'cita_id' => 'required',
+            'servicio_id' => 'required',
+            'precio' => 'required|numeric'
         ]);
-
         try {
-            $c = Cita::find($request->id);
-
-            if (!$c) {
-                return response()->json(['error' => 'Cita no encontrada'], 404);
+            $cita = Cita::find($request->cita_id);
+            if (!$cita || $cita->finalizada) {
+                return response()->json('No se puede agregar detalle a esta cita');
             }
-
-            return response()->json($c->detalle_citas);
+            $detalle = new Detalle_cita();
+            $detalle->cita_id = $request->cita_id;
+            $detalle->servicio_id = $request->servicio_id;
+            $detalle->precio = $request->precio;
+            $detalle->save();
+            return response()->json('Detalle agregado correctamente');
         } catch (\Throwable $th) {
-            return response()->json(['error' => 'Error: ' . $th->getMessage()], 500);
+            return response()->json('Error: ' . $th->getMessage());
         }
     }
 
-    // Ver una cita específica
-    public function show($id)
+    /**
+     * Borrar un detalle de una cita (solo si no está finalizada).
+     */
+    public function borrarDetalle($id)
     {
-        $cita = Cita::find($id);
-
-        if (!$cita) {
-            return response()->json(['error' => 'Cita no encontrada'], 404);
+        try {
+            $detalle = Detalle_cita::find($id);
+            if (!$detalle || $detalle->cita->finalizada) {
+                return response()->json('No se puede eliminar este detalle');
+            }
+            $detalle->delete();
+            return response()->json('Detalle eliminado correctamente');
+        } catch (\Throwable $th) {
+            return response()->json('Error: ' . $th->getMessage());
         }
-
-        return response()->json($cita);
     }
 
-    // Finalizar cita
-    public function finalizar($id)
+    /**
+     * Borrar una cita (solo si no tiene detalles).
+     */
+    public function borrarCita($id)
     {
-        $cita = Cita::find($id);
-
-        if (!$cita) {
-            return response()->json(['error' => 'Cita no encontrada'], 404);
+        try {
+            $cita = Cita::find($id);
+            if (!$cita || $cita->detalle_citas()->count() > 0) {
+                return response()->json('No se puede eliminar esta cita');
+            }
+            $cita->delete();
+            return response()->json('Cita eliminada correctamente');
+        } catch (\Throwable $th) {
+            return response()->json('Error: ' . $th->getMessage());
         }
-
-        if ($cita->finalizada) {
-            return response()->json(['error' => 'La cita ya está finalizada'], 400);
-        }
-
-        $cita->finalizada = true;
-        $cita->save();
-
-        return response()->json(['message' => 'Cita finalizada correctamente']);
     }
 
-    // Eliminar cita
-    public function destroy($id)
+    /**
+     * Finalizar una cita.
+     */
+    public function finalizarCita($id)
     {
-        $cita = Cita::find($id);
-
-        if (!$cita) {
-            return response()->json(['error' => 'Cita no encontrada'], 404);
+        try {
+            $cita = Cita::find($id);
+            if (!$cita) {
+                return response()->json('Cita no encontrada');
+            }
+            $cita->finalizada = true;
+            $cita->save();
+            return response()->json('Cita finalizada correctamente');
+        } catch (\Throwable $th) {
+            return response()->json('Error: ' . $th->getMessage());
         }
-
-        // Solo se puede borrar si no tiene detalles
-        if ($cita->detalleCitas->isNotEmpty()) {
-            return response()->json(['error' => 'No se puede eliminar una cita con detalles'], 400);
-        }
-
-        $cita->delete();
-        return response()->json(['message' => 'Cita eliminada correctamente']);
     }
 }

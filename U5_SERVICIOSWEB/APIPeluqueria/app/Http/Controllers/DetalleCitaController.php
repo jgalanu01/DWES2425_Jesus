@@ -2,62 +2,49 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cita;
-use App\Models\DetalleCita;
-use App\Models\Servicio;
+use App\Models\Detalle_cita;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class DetalleCitaController extends Controller
 {
-    // Añadir detalle a una cita (solo si la cita no está finalizada)
-    public function store(Request $request, $id)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
     {
-        $request->validate([
-            'servicio_id' => 'required|exists:servicios,id',
-            'precio' => 'required|numeric',
-        ]);
-
-        $cita = Cita::find($id);
-
-        if (!$cita) {
-            return response()->json(['error' => 'Cita no encontrada'], 404);
-        }
-
-        if ($cita->finalizada) {
-            return response()->json(['error' => 'No se puede agregar detalle a una cita finalizada'], 400);
-        }
-
-        $detalleCita = new DetalleCita();
-        $detalleCita->cita_id = $cita->id;
-        $detalleCita->servicio_id = $request->servicio_id;
-        $detalleCita->precio = $request->precio;
-
-        $detalleCita->save();
-
-        return response()->json($detalleCita, 201); // Devuelve el detalle creado con código 201
+        //
     }
 
-    // Eliminar un detalle de una cita (solo si la cita no está finalizada)
-    public function destroy($id, $detalleId)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
     {
-        $cita = Cita::find($id);
+        //
+    }
 
-        if (!$cita) {
-            return response()->json(['error' => 'Cita no encontrada'], 404);
-        }
+    /**
+     * Display the specified resource.
+     */
+    public function show(Detalle_cita $detalle_cita)
+    {
+        //
+    }
 
-        if ($cita->finalizada) {
-            return response()->json(['error' => 'No se puede eliminar detalle de una cita finalizada'], 400);
-        }
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Detalle_cita $detalle_cita)
+    {
+        //
+    }
 
-        $detalleCita = DetalleCita::find($detalleId);
-
-        if (!$detalleCita || $detalleCita->cita_id !== $cita->id) {
-            return response()->json(['error' => 'Detalle de cita no encontrado'], 404);
-        }
-
-        $detalleCita->delete();
-
-        return response()->json(['message' => 'Detalle de cita eliminado correctamente']);
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Detalle_cita $detalle_cita)
+    {
+        //
     }
 }
