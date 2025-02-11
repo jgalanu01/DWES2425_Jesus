@@ -2,10 +2,28 @@
 const app = require('./app');
 
 
-//Puerto de escucha del servidor
-const puerto = 3000;
+//Cargar dotenv para trabajar con variables .env
+const dotenv= require('dotenv');
+dotenv.config();
 
-//Lanzar aplicación
-app.listen(puerto, () => {
-    console.log('Aplicación lanzada en http://localhost:3000')
-})
+//Puerto de escucha del servidor
+const puerto = process.env.APP_PORT;
+
+//Cargar configuracion de BD
+const {bd, Usuario} = require('./Models/index');
+
+//Conectar con la BD
+bd.sync(
+    {
+        force:true, //¡¡CAMBIAR A FALSE CUANDO EL ESQUEMA DEL BD SEA DEFINITIVO!!
+    })
+    .then(()=>{
+        console.log('BD sincronizada');
+        //Lanzar la aplicación 
+        app.listen(puerto, () => {
+            console.log('Aplicación lanzada en http://localhost:3000')
+        })
+    })
+    .catch((error)=>{
+        console.log('Error al conectar con la BD',error);
+    });
