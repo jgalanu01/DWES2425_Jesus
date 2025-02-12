@@ -4,10 +4,10 @@ const { DataTypes } = require('sequelize');
 //Importar configuración BD
 const bd = require('../config/database');
 
-const Usuario = bd.define('Usuario', {
+const Usuario = bd.define('usuario', {
     id: {
         type: DataTypes.INTEGER,
-        autoincrement: true,
+        autoIncrement: true,
         primaryKey: true
     },
     nombre: {
@@ -38,7 +38,7 @@ const Usuario = bd.define('Usuario', {
 
 },
     {
-        tablename: 'usuarios',
+        //tablename: 'usuarios',
         timestamps: true
 
     }

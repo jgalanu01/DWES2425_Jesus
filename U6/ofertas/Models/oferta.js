@@ -6,7 +6,7 @@ const bd= require('../config/database');
 const { on } = require('../app');
 
 //Definimos el modelo de oferta
-const Oferta=bd.define('Oferta',
+const Oferta=bd.define('ofertas',
     {
         id:{
             type:DataTypes.INTEGER,
@@ -25,7 +25,7 @@ const Oferta=bd.define('Oferta',
           type:DataTypes.INTEGER,
           allowNull:false,
           references:{
-              model:'Usuario',
+              model:'usuarios',
               key:'id'
           },
           onUpdate:'CASCADE',
@@ -34,7 +34,9 @@ const Oferta=bd.define('Oferta',
       },
       {
       
-      tablename:'ofertas',
+      
       timestamps:true
       });
+
+      module.exports=Oferta;
         

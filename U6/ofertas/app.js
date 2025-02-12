@@ -3,6 +3,8 @@ const express=require('express')
 
 //Inicializar express
 const app=express();
+//Añadir middleware para manejar datos de solicitudes en body con JSON
+app.use(express.json());
 
 //Importar rutas
 const rutaUsuario=require('./routes/usuarioR');
