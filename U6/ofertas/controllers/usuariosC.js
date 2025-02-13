@@ -4,8 +4,37 @@ const Usuario = require('../Models/usuario');
 const cifrar = require('bcrypt');
 
 
-function login(req, res) {
-    res.status(200).send('Página de login');
+async function login(req, res) {
+
+    try {
+
+        //Recuperar datos
+        const { email, password } = req.body;
+        if(!email || !password){
+            throw 'Faltan email o ps';
+        }
+
+        //Rcuperar el us por el email
+        const us= await Usuario.findOne({where:{email}});
+        if(!us){
+            throw 'Usuario incorrecto';
+
+        }
+        else{
+            //Comprobar con bcrypt si la contraseña es correcta
+            if(await cifrar.compare(password,us.password)){
+                //res.status(200).send({email:us.email,nombre:us.nombre,perfil:us.perfil});
+                res.status(200).send(us);
+            }
+            else{
+                throw 'Usuario incorrecto';
+            }
+        }
+        
+    } catch (error) {
+        res.status(500).send({ textoError: error });
+        
+    }
 
 }
 
@@ -39,6 +68,8 @@ async function registro(req, res) {
         res.status(200).send({ textoError: error });
     }
 }
+
+
 
 //Exportar funciones para usarlas fuera de este fichero
 module.exports = {
