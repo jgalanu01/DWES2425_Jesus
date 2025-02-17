@@ -1,0 +1,27 @@
+Fase: Crear Base de datos
+Primero descomentar todo en el .env 
+Poner siguiente comando php artisan make:migration create_nombreTabla_table (minuscula plural) (Primero crear la q no tiene foreing key)
+Vas a database/migration y rellenas las migrations con los campos de la tabla
+Ejecutar comando php artisan migrate
+Ejecutar comando php artisan make:model nombreTabla (mayuscula Singular)
+Te vas a app/models y rellenas los modelos con las funciones hasmany(Uno a muchos) belongsto(uno a uno)
+Ejecutar comando php artisan make:seeder nombretablaMasS (Mayusculas plural)->esto sera(nombreDeLaSeederCreada)
+Te vas a database/seeders y haces un insert (DB importas /facades)
+Ejecutas php artisan db:seed --class=nombreDeLaSeederCreada
+
+Fase crear rutas
+Si es ver = get, si es crear = post, si es modificar = put y si es borrar = delete
+Vas a routes/web.php (copiar y pegar)
+Ejecutar comando php artisan make:controller nombreQueQuieras(NombreTablaC) e importar en el web
+Vas a app/http y creas todos los metodos en el controlador
+Vas a resources/view y creas una nombre.blade.php
+
+Copiar y pegar en todas las vistas
+    @if (session('mensaje'))
+    <p style="color:red;">{{session('mensaje')}}</p>
+    @endif
+
+
+
+<img src="{{asset('img/cesta.png')}}" 
+Las imagenes se guardan en public/img
