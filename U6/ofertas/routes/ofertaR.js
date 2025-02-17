@@ -11,8 +11,8 @@ const controlador = require('../controllers/ofertasC');
 api.get('/ofertas', controlador.index);
 api.get('/oferta/:id', controlador.show); //Se recupera id en req.params
 api.post('/oferta', controlador.store);
-api.put('/oferta', controlador.update);
-api.delete('/oferta', controlador.destroy);
+api.put('/oferta/:id', controlador.update);
+api.delete('/oferta/:id', controlador.destroy);
 
 //Exportamos las rutas de este fichero
 module.exports = api;
