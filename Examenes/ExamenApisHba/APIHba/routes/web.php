@@ -9,6 +9,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/contenido',[ContenidoController::class,'index']);
-Route::post('/reproducciones',[ClienteController::class,'obtenerReproducciones'])->withoutMiddleware([VerifyCsrfToken::class]);
-Route::post('/ver',[ClienteController::class,'reproducir'])->withoutMiddleware([VerifyCsrfToken::class]);
+Route::get('/contenido', [ContenidoController::class, 'index']);
+Route::post('/reproducciones', [ClienteController::class, 'obtenerReproducciones'])->withoutMiddleware([VerifyCsrfToken::class]);
+Route::post('/ver', [ClienteController::class, 'reproducir'])->withoutMiddleware([VerifyCsrfToken::class]);
