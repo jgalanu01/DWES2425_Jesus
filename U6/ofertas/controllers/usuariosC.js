@@ -5,6 +5,11 @@ const cifrar = require('bcrypt');
 //Importar gestión de tokens
 const servicioJWT=require('../service/jwt');
 
+//Importar librerías que permiten trabajar con ficheros.
+
+const fs=require('fs');
+const path=require('path');
+
 
 async function login(req, res) {
 
@@ -76,13 +81,27 @@ async function registro(req, res) {
 async function subirAvatar(req,res){
     try{
 
+        console.log(req.files);
+
          //Comprobar si hay fichero en req
          if(!req.files.avatar){
             throw 'No has proporcionado fichero';
          }
 
-         console.log(files);
-         res.status(200);
+         //Obtener el nombre del fichero para guardarlo en la bd en la tabla usuario en un campo
+         const rutaF=req.files.avatar.path.split('/');
+         //datos us lo hemos creado en req al validar el token
+         const us=await Usuario.findByPk(req.datosUs.id);
+         //Rellenar el atributo avatar con el nombre del fichero subido.
+         us.avatar=rutaF[1];
+         if(us.changed()){
+            await us.save();
+            res.status(200).send('Avatar actualizado');
+         }else{
+            res.status(200).send('No se han modificado datos');
+
+         }
+        
     }
 
     catch (error){
@@ -93,6 +112,35 @@ async function subirAvatar(req,res){
 }
 
 async function obtenerAvatar(req,res){
+
+    try {
+        //Comprobar que us existe y tiene avatar
+        const us=await Usuario.findByPk(req.datosUS.id);
+        if(!us||!us.avatar){
+            throw 'Usuario no existe o no tiene avatar';
+        }
+        else{
+            const nombreF=`./avatars/${us.avatar}`;
+            //Acceder al fichero para devolver
+            fs.stat(nombreF,(error,stat)=>{
+                if(error){
+                    throw 'Imagen no disponible';
+                }
+                else{
+                    res.sendFile(path.resolve(nombreF));
+
+                }
+            });
+        }
+        
+    } catch (error) {
+        res.status(500).send({textoError:error});
+        
+    }
+   
+  
+
+
 
 }
 

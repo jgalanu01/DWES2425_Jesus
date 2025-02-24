@@ -13,7 +13,7 @@ function comprobarAuth(req,res,next){
     const resultado=servicioJWT.verificarToken(req.headers.authorization);
     console.log(resultado);
     //Añadimos a los datos de petición (req) el payload
-    req.datosUS = resultado;
+    req.datosUs = resultado;
     next();
     
   } catch (error) {
