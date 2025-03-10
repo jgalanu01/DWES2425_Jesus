@@ -7,6 +7,8 @@ const rutaC=require('./ruta/rConductor');
 const rutaL=require('./ruta/rLinea');
 const rutaB=require('./ruta/rBillete');
 
+app.use(express.json());
+
 
 //El /api será comun a todas
 app.use('/api',rutaC);
