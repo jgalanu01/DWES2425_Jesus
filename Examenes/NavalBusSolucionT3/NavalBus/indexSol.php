@@ -20,7 +20,7 @@ require_once 'controlador.php';
 
     <!-- Sección de Inicio de Servicio -->
     <?php
-    if (!isset($_SESSION['conductor'])) {
+    if (!isset($_SESSION[''])) {
     ?>
 
         <h2>Iniciar Servicio</h2>
