@@ -1,3 +1,16 @@
+<?php
+
+
+require_once 'Modelo.php';
+
+
+
+?>
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -44,7 +57,7 @@
 
             <label for="numEntradas">Número de Entradas:</label>
             <br />
-            <input type="number" name="numEntradas" id="numEntradas" value="<?php echo (!empty($_POST['numEntradas']) ? $_POST['numEntradas'] : '1') ?>">
+            <input type="number" name="numEntradas" id="numEntradas" value="<?php echo (!empty($_POST['numEntradas']) ? $_POST['numEntradas'] : '1'); ?>">
             <br />
 
             <label for="descuento">Descuentos</label><br />
@@ -64,7 +77,7 @@ if (isset($_POST['comprar'])) {
     if (empty($_POST['nombre']) || !isset($_POST['tipoEntrada']) || !isset($_POST['espectaculo']) || !isset($_POST['fechaEvento']) || !isset($_POST['numEntradas'])) {
         echo "<p style='color:red;'>Debe completar todos los campos.</p>";
     } else {
-        if ($_POST['numEntradas'] < 1 || ($_POST['numEntradas'] > 4)) {
+        if ($_POST['numEntradas'] < 1 || $_POST['numEntradas'] > 4) {
             echo "<p style='color:red;'>El número de entradas debe ser entre 1 y 4.</p>";
         } else {
             if ($_POST['tipoEntrada'] == 'mayor 60' && isset($_POST['descuento']) && in_array('Familia Numerosa', $_POST['descuento'])) {
@@ -73,29 +86,40 @@ if (isset($_POST['comprar'])) {
                 $total = 0;
 
                 if ($_POST['tipoEntrada'] == 'general') {
-                    $total = 10 * ($_POST['numEntradas']);
+                    $total = 10 * $_POST['numEntradas'];
                 } elseif ($_POST['tipoEntrada'] == 'mayor 60') {
-                    $total = 8 * ($_POST['numEntradas']);
+                    $total = 8 * $_POST['numEntradas'];
                 } else {
-                    $total = 5 * ($_POST['numEntradas']);
+                    $total = 5 * $_POST['numEntradas'];
                 }
 
-?>
+                if (isset($_POST['descuento'])) {
+                    if (in_array('Familia Numerosa', $_POST['descuento'])) {
+                        $total *= 0.95;
+                    }
+                    if (in_array('Abonado', $_POST['descuento'])) {
+                        $total *= 0.90;
+                    }
+                    if (in_array('Dia del Espectador', $_POST['descuento'])) {
+                        $total *= 0.98;
+                    }
+                }
+                ?>
                 <table border=1>
                     <tr>
                         <th colspan="2">TICKET DE COMPRA</th>
                     </tr>
                     <tr>
                         <td>Nombre</td>
-                        <td><?php echo $_POST['nombre'] ?></td>
+                        <td><?php echo $_POST['nombre']; ?></td>
                     </tr>
                     <tr>
                         <td>Tipo de entrada</td>
-                        <td><?php echo $_POST['tipoEntrada']?></td>
+                        <td><?php echo $_POST['tipoEntrada']; ?></td>
                     </tr>
                     <tr>
                         <td>Nº de entradas</td>
-                        <td><?php echo $_POST['numEntradas'] ?></td>
+                        <td><?php echo $_POST['numEntradas']; ?></td>
                     </tr>
                     <tr>
                         <td>Descuentos</td>
@@ -103,14 +127,24 @@ if (isset($_POST['comprar'])) {
                     </tr>
                     <tr>
                         <td>Total a pagar</td>
-                        <td><?php echo $total?>€</td>
+                        <td><?php echo $total; ?>€</td>
                     </tr>
                 </table>
-<?php
+                <?php
+
+                //Crear el objeto entrada
+
+                $e=new Entrada($_POST['nombre'],$_POST['tipoEntrada'],$_POST['fechaEvento'],$_POST['numEntradas'], (isset($_POST['descuento']) ? implode('/', $_POST['descuento']) : ''),$total);
+                $f=new Modelo();
+
+                if($f->insertar($e)){
+                    echo 'Entrada guardada';
+                }
+
+
             }
         }
     }
 }
 ?>
-
 </html>
