@@ -36,7 +36,7 @@
 
     <label>Tipo</label>
     <br/>
-    <input type="radio" name="tipo" id="pelicula" value="pelicula" <?php echo (!isset($_POST['tipo']) || $_POST['tipo']=='pelicula')  ? "checked='checked'" :''?>>
+    <input type="radio" name="tipo" id="pelicula" value="pelicula" checked='checked'>
     <label for="pelicula">Pelicula</label>
     <input type="radio" name="tipo" id="serie" value="serie" <?php echo (isset($_POST['tipo']) && $_POST['tipo']=='serie')  ? "checked='checked'" :''?>>
     <label for="serie">Serie</label>
@@ -66,7 +66,7 @@
     if(empty($_POST['titulo']) || !isset($_POST['fecha'])|| !isset($_POST['capitulos'])){
         echo 'Los campos no pueden estar vacios';
     }else{
-        if($_POST['tipo']=='serie' && $_POST['capitulos']<=1){
+        if(isset($_POST['tipo'])=='serie' && $_POST['capitulos']<=1){
             echo 'Error, tienes que marcar mas de un capítulo si seleccionas serie';
         }else{
             if(!isset($_POST['genero'])||empty($_POST['genero'])){
