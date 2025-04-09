@@ -89,6 +89,18 @@
         }else{
             if(isset($_POST['tipoM']) && $_POST['tipoM']=='diesel' && isset($_POST['promocion']) && $_POST['promocion']=='Plan green energy(-2500€)'){
                 echo 'No puedes seleccionar diesel con esa promoción';
+            }else{
+                if(isset($_POST['tipoC'])&&$_POST['tipoC']=='Organismo Público'&& $_POST['precio']>15000){
+                    echo 'Los precios de un coche de un organismo público no pueden superar los 15000€.';
+                }else{
+                   
+                    echo 'Datos correctos'.'<br/>';
+                        echo 'Nombre:'. $_POST['nombre'].'<br>';
+                        echo 'Opciones:'.implode('/',$_POST['opciones']).'<br/>';
+                        echo '</br>';
+
+                        
+                }
             }
         }
 

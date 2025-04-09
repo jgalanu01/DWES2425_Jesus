@@ -1,3 +1,6 @@
 jesusi;5;menor 6;2025-04-03;1;Día del Espectador;5
 Jesús;10;menor 6;2025-04-03;2;;10
 sss;10;general;2025-04-07;1;Día del Espectador;10
+jesusin;10;general;2025-04-08;1;Día del Espectador;10
+jesusin;10;general;2025-04-08;1;;10
+jesusin;10;general;2025-04-08;1;;10
