@@ -79,6 +79,57 @@ if(isset($_POST['comprar'])){
             if($_POST['tipo']=='Mayor de 60' && isset($_POST['descuento']) && in_array('Familia Numerosa', $_POST['descuento'])){
                 echo 'El tipo de entrada mayor de 60 no es compatible con el descuento de fam numerosa';
             }else{
+
+
+                ?>
+
+                <table border=1>
+
+                <tr>
+
+                <th colspan="2">Ticket</th>
+
+            </tr>
+
+            <tr>
+                <td>Nombre:</td>
+                <td> <?php echo ($_POST['nombre']) ?></td>
+            </tr>
+
+            <tr>
+                <td>Tipo de entrada:</td>
+                <td><?php echo ($_POST['tipo'])?></td>
+            </tr>
+
+            <tr>
+                <td>Nº de entradas</td>
+                <td><?php echo ($_POST['entradas'])?></td>
+            </tr>
+
+            <tr>
+                <td>Descuentos</td>
+                <td><?php echo (isset($_POST['descuento']) ? implode('/', $_POST['descuento']):'Ninguno')?></td>
+            </tr>
+
+            </table>
+
+            <br/>
+
+            <?php
+
+
+            echo 'Nombre:'.($_POST['nombre']).'<br/>';
+            echo 'Descuentos:'.(isset($_POST['descuento']) ? implode('/' , $_POST['descuento']) : 'No hay descuentos').'<br/>';
+
+        
+?>
+
+
+
+
+              
+
+<?php
                 
             }
         }
