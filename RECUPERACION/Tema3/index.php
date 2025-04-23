@@ -91,13 +91,21 @@ if ($bd->getConexion() == null) {
 
                 <!-- Seleccionar Recurso -->
 
-                 <!--3.Ejercicio-->
+                <!--3.Ejercicio-->
 
-                
+
                 <section>
                     <h3 style="color:blue">Selecciona Recurso</h3>
-                    <?php $recursos=$bd->obtenerRecursos()?>
+                    <?php $recursos = $bd->obtenerRecursos() ?>
                     <select name="recurso">
+                        <?php
+
+                        foreach ($recursos as $r) {
+                            echo '<option value="' . $r->getId() . '"' .
+                                (isset($_POST['recurso']) && $_POST['recurso'] == $r->getId() ? 'selected="selected"' : '') . '>' . $r->getNombre() . '</option>';
+                        }
+
+                        ?>
                     </select>
                     <input type="submit" name="verR" value="verReservas" />
                     <table width="50%">
@@ -108,6 +116,27 @@ if ($bd->getConexion() == null) {
                             <td>Fecha</td>
                             <td>Hora</td>
                         </tr>
+                        <?php
+
+                        if (isset($reservas) ) {
+                            foreach ($reservas as $r) {
+
+                        ?>
+
+                                <tr style="color:<?php echo (isset($_COOKIE['color']) && $_SESSION['usuario']->getIdRayuela()==$r->getUsuario()->getIdRayuela() ? $_COOKIE['color']: 'black' )?>;">
+                                    <td><?php echo $r->getId()?></td>
+                                    <td><?php echo $r->getUsuario()->getNombre()?></td>
+                                    <td><?php echo $r->getRecurso()->getNombre()?></td>
+                                    <td><?php echo $r->getFecha()?></td>
+                                    <td><?php echo $r->getHora()?></td>
+                                </tr>
+
+                        <?php
+
+                            }
+                        }
+
+                        ?>
                     </table>
                 </section>
                 <!-- Crear/anular reserva -->

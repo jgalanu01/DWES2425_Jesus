@@ -37,6 +37,10 @@ if(isset($_POST['acceder'])){
   setcookie('color',$_POST['color']); //el segundo parámetro, color es como se llama en el input, y el primer parametro color es como yo quiero llamar a la cookie.
   header('location:index.php');
 
+
+  //Ejercicio 3. Ver las reservas
+}elseif(isset($_POST['verR'])){
+  $reservas=$bd->obtenerReservas($_POST['recurso']); //Quiero ver las reservas del recurso seleccionado
 }
 
 
