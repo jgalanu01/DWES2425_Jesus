@@ -104,6 +104,142 @@ class Modelo
         return $respuesta;
     }
 
+    //Ejercicio 4.Primero la funcion de comprobar la disponibilidad
+
+    function verificarDisponibilidad($recurso,$fecha,$hora){
+        $respuesta=false;
+
+        try {
+
+            $consulta=$this->conexion->prepare('SELECT disponibilidad (?,?,?)');
+            $params=array($recurso,$fecha,$hora);
+
+            if($consulta->execute($params)){
+                if($fila=$consulta->fetch()){
+                    //el array solo tiene una posición,1 o 0. Por lo tanto se accede con la primera y unica posicion que tiene [0]
+                    $respuesta=$fila[0];
+                    
+                }
+            }
+          
+        } catch (\Throwable $th) {
+
+            echo $th->getMessage();
+            global $mensaje;
+            $mensaje = $th->getMessage();
+           
+        }
+
+
+        return $respuesta;
+    }
+
+    //Guardamos la reserva, un boolean si se ha hecho bien true si no false. Isertamos y luego hacemos update porque dice el examen
+   // que hay que incrementar el nuemro de reservas del usuario seleccionado en 1, hay que  hacer una transacción 
+
+    function guardarReserva($r){
+        $respuesta=false;
+
+
+        try {
+            $this->conexion->beginTransaction();
+            //Consulta para insertar la reserva al lado de la tabla reservas tnre parentesis puedo darle el orden que quiera si quiero
+            //No ponemos anulada porque por defecto es false, igual que el id de rayuela hemos peusto nulo
+            $consulta=$this->conexion->prepare('INSERT into reservas(recurso,usuario,hora,fecha) values(?,?,?,?)');
+            $params=array($r->getRecurso(),$r->getUsuario(),$r->getHora(),$r->getFecha());
+            if($consulta->execute($params) and $consulta->rowCount()==1){
+                //Ahora el update si se ha hecho la reserva y nos ha devolvido una fila
+                $consulta=$this->conexion->prepare('UPDATE usuarios set numReservas=numReservas+1 where idRayuela=? ');
+                $params=array($r->getUsuario());
+                if($consulta->execute($params) and $consulta->rowCount()==1){
+                    $this->conexion->commit();
+                    $respuesta=true;
+
+                }else{
+                    $this->conexion->rollback();
+                }
+
+            }
+           
+        } catch (\Throwable $th) {
+            //Siempre que se haga una transacción hay que poner un rollback
+            $this->conexion->rollback();
+
+            echo $th->getMessage();
+            global $mensaje;
+            $mensaje = $th->getMessage();
+        }
+
+        return $respuesta;
+
+    }
+
+    function infoUsuario($usuario)
+    {
+        $respuesta = null;
+
+        try {
+           
+            $consulta = $this->conexion->prepare('SELECT * FROM usuarios WHERE idRayuela=?');
+            $params = [$usuario];
+
+            if ($consulta->execute($params)) {
+                
+                if ($fila = $consulta->fetch()) { 
+                    $respuesta = new Usuarios($fila['idRayuela'], $fila['nombre'], $fila['activo'], $fila['numReservas']);
+
+
+                }
+            }
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+            global $mensaje;
+            $mensaje = $th->getMessage();
+        }
+
+        return $respuesta;
+    }
+
+
+    //Ejercicio 5. Anular la reserva, marcar como que no está activa la reserva
+    function anularReserva($usuario,$recurso,$fecha,$hora){
+
+        $respuesta=false;
+
+
+        try {
+            $this->conexion->beginTransaction();
+            
+            $consulta=$this->conexion->prepare('UPDATE reservas set anulada=true where usuario=? and recurso=? and fecha=? and hora=?');
+            $params=array($usuario,$recurso,$fecha,$hora);
+            
+            if($consulta->execute($params) and $consulta->rowCount()==1){
+                //Ahora el update si se ha hecho la reserva y nos ha devolvido una fila
+                $consulta=$this->conexion->prepare('UPDATE usuarios set numReservas=numReservas-1 where idRayuela=? ');
+                $params=array($usuario);
+                if($consulta->execute($params) and $consulta->rowCount()==1){
+                    $this->conexion->commit();
+                    $respuesta=true;
+
+                }else{
+                    $this->conexion->rollback();
+                }
+
+            }
+           
+        } catch (\Throwable $th) {
+            //Siempre que se haga una transacción hay que poner un rollback
+            $this->conexion->rollback();
+
+            echo $th->getMessage();
+            global $mensaje;
+            $mensaje = $th->getMessage();
+        }
+
+        return $respuesta;
+
+    }
+
 
     /**
      * Get the value of conexion
