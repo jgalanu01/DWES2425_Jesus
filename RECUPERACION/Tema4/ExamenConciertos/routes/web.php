@@ -10,7 +10,7 @@ Route::get('/', function () {
 Route::controller(ConciertoC::class)->group(
     function (){
         Route::get('inicio','inicioM')->name('rInicio');
-        Route::get('entradas/{idConcierto}','entradasM')->name('rEntradas');
+        Route::get('entradas','entradasM')->name('rEntradas'); //Aquí tendria que tener el id concierto tambien como en la de abajo pero lo vamos a pasar en el formulario de Concierto en vez de aquí en la ruta
         Route::post('entradas/{idConcierto}','venderM')->name('rVender');
         Route::delete('concierto/{idConcierto}','borrarM')->name('rBorrar');
         
