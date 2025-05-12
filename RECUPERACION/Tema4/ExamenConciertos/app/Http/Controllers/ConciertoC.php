@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Concierto;
+use App\Models\Entrada;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ConciertoC extends Controller
 {
@@ -31,7 +34,42 @@ class ConciertoC extends Controller
     }
 
     function venderM(Request $r,$idConcierto){ //Necesito datos del formulario, por eso pongo Request
-        return 'pagina de ventas';
+        $r->validate(['email'=>'required','numEntradas'=>'required|numeric|min:1|max:4']);
+
+        try {
+            //Chequear que hay entradas suficientes, lo pide en el examen.El concierto va en la ruta con el idconcierto.
+            $c=Concierto::find($idConcierto);
+
+            if($c==null){
+                throw new Exception('Concierto no existe');
+            }
+            if($c->aforo<$r->numEntradas){
+                throw new Exception('No hay aforo suficiente');
+            }
+
+            //Hacemos una transacción que cree la venta y actualice el aforo(tiene que ser aforo-ventas).
+            DB::transaction(function () use($r, $c) { //En el use se pasa lo que voy a utilizar, todo el request, vamos a pasar, porque no pasaria nada y el concierto $c
+                //Crear la entrada
+                $e=new Entrada();
+                $e->email=$r->email;
+                $e->concierto_id=$c->id; //El concierto no viene del request
+                $e->numEntradas=$r->numEntradas;
+                $e->save(); //insert
+
+                //Update de aforo del concierto
+            
+                $c->aforo-=$r->numEntradas;
+                $c->save(); //update
+            });
+
+        } catch (\Throwable $th) {
+
+            return back()->with('mensaje',$th->getMessage());
+            
+        }
+
+        return back()->with('info','Se ha comprado la entrada con éxito');
+        
     }
 
     function borrarM($idConcierto){
