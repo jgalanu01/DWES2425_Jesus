@@ -8,6 +8,12 @@
 </head>
 <body>
 
+    @if(session('mensaje'))
+    <h2 style="color :green;">{{session('mensaje')}}</h2>
+    @endif
+
+
+
     <form action="{{route('rEntradas')}}" method="get">
 
     <h3>Selecciona un concierto</h3>
@@ -33,6 +39,7 @@
                 <td>Fechas</td>
                 <td>Aforo</td>
                 <td>Precio</td>
+                
 
             </tr>
         </thead>
@@ -44,6 +51,7 @@
                 <td>{{$c->fecha}}</td>
                 <td>{{$c->aforo}}</td>
                 <td>{{$c->precioEntrada}}</td>
+                
             </tr>
                 
             @endforeach

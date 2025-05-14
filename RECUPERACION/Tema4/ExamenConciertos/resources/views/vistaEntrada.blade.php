@@ -17,9 +17,11 @@
     @endif
 
 
-
-
-    <h2>Concierto:{{$concierto->titulo}}</h2>    <!--$concierto la variable del compact del controlador -->
+    <form action="{{route('rBorrar',$concierto->id)}}" method="post">
+        @method('DELETE')
+        @csrf
+       
+    <h2>Concierto:{{$concierto->titulo}} <button type="submit" name="borrar" id="borrar">Borrar</button></h2>    <!--$concierto la variable del compact del controlador -->
     <h2>Aforo:{{$concierto->aforo}}</h2>
     <h2>Precio entrada:{{$concierto->precioEntrada}}</h2>
     <h2><a href="{{route('rInicio')}}">Inicio</a></h2>
@@ -61,7 +63,7 @@
     <tr>
         <td>{{$e->concierto->id}}</td>
         <td>{{$e->concierto->fecha}}</td>
-        <td>{{$e->concierto->email}}</td>
+        <td>{{$e->email}}</td>
         <td>{{$e->concierto->aforo}}</td>
     </tr>
     @endforeach
