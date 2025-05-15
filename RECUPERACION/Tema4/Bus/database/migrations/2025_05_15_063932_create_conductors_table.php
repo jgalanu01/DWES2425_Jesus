@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->string("nombre")->nullable(false);
-            $table->string("dni")->nullable(false)->unique;
+            $table->string("dni")->nullable(false)->unique();
         });
     }
 

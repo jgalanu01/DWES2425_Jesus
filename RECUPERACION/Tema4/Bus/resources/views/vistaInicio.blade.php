@@ -18,8 +18,13 @@
 
     <form action="{{route('billetesR')}}" method="post">
      @csrf
-    <label for="conductor">Conductor</h3>
-    <input type="text" name="conductor" id="conductor" placeholder="Rellena el dni"> 
+    <label for="dni">Conductor</label>
+    <input type="text" name="dni" id="dni" placeholder="Rellena el dni"> 
+
+    @error('dni')
+    <p style="color: red">Error,tienes que rellenar el dni</p>
+        
+    @enderror
     <br>
     <button type="submit">Ir a servicio</button>  
 

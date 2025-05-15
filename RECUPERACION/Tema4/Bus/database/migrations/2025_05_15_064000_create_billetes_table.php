@@ -18,7 +18,7 @@ return new class extends Migration
             ->onUpdate('cascade')->onDelete('restrict');
             $table->time("hora");
             $table->float("precio");
-            $table->boolean("anulado");
+            $table->boolean("anulado")->default(false);
         });
     }
 

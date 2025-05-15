@@ -22,6 +22,7 @@
         @csrf
        
     <h2>Concierto:{{$concierto->titulo}} <button type="submit" name="borrar" id="borrar">Borrar</button></h2>    <!--$concierto la variable del compact del controlador -->
+    </form>
     <h2>Aforo:{{$concierto->aforo}}</h2>
     <h2>Precio entrada:{{$concierto->precioEntrada}}</h2>
     <h2><a href="{{route('rInicio')}}">Inicio</a></h2>
