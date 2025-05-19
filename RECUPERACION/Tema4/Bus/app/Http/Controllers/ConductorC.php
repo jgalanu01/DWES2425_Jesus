@@ -27,16 +27,16 @@ class ConductorC extends Controller
                 return back()->with('mensaje', 'El dni no existe');
             }
 
-            $fechaHoy = date('Y-m-d');
+            
 
             $servicio = Servicio::where('conductor_id', $conductor->id)
-                                ->where('fecha', $fechaHoy)
+                                ->where('fecha', date('Y-m-d'))
                                 ->first();
 
             if ($servicio == null) {
                 $servicio = new Servicio();
                 $servicio->conductor_id = $conductor->id;
-                $servicio->fecha = $fechaHoy;
+                $servicio->fecha = date('Y-m-d');
                 $servicio->recaudacion = 0;
                 $servicio->save();
             }
@@ -49,31 +49,32 @@ class ConductorC extends Controller
     }
 
     // Muestra la vista de gestión de billetes para un conductor
-    public function ventaM($idConductor)
-    {
+    public function ventaM($idConductor){
+
         try {
             $conductor = Conductor::find($idConductor);
-
+            
             if ($conductor == null) {
-                return redirect()->route('inicioR')->with('mensaje', 'Conductor no encontrado');
+            return redirect()->route('inicioR')->with('mensaje', 'Conductor no encontrado');
             }
-
-            $fechaHoy = date('Y-m-d');
-
+            
+            
             $servicio = Servicio::where('conductor_id', $conductor->id)
-                                ->where('fecha', $fechaHoy)
-                                ->first();
-
+            ->where('fecha', date('Y-m-d'))
+            ->first();
+            
             if ($servicio == null) {
-                return redirect()->route('inicioR')->with('mensaje', 'No se ha creado el servicio para hoy');
+            return redirect()->route('inicioR')->with('mensaje', 'No se ha creado el servicio para hoy');
             }
-
+            
             $billetes = $servicio->billetes(); // relación hasMany en modelo Servicio
-
-            return view('vistaBilletes', compact('conductor', 'servicio', 'billetes'));
-
-        } catch (\Throwable $th) {
+            
+            return view('vistaBilletes', compact('conductor', 'servicio')); //No pasar billetes en el compact proque lo cogemos con el has many
+            
+            } catch (\Throwable $th) {
             return redirect()->route('inicioR')->with('mensaje', $th->getMessage());
-        }
+   
+    
     }
+}
 }
