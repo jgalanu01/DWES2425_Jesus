@@ -20,12 +20,12 @@
     <h3>Servicio: {{ $servicio->id }} | Fecha: {{ $servicio->fecha }} | Recaudación: {{ $servicio->recaudacion }} €</h3>
 
     <h3>Registrar nuevo billete</h3>
-    <form action="{{ route('registrarBilleteR', $servicio->id) }}" method="post">
+    <form action="" method="post">
         @csrf
         <label for="tipo">Tipo de Billete:</label>
         <select name="tipo" id="tipo">
-            <option value="normal">Normal (1.50 €)</option>
-            <option value="reducido">Reducido (1.00 €)</option>
+            <option value="normal">Normal-1.50</option>
+            <option value="reducido">Reducido-1.00</option>
         </select>
         <br><br>
         <button type="submit">Registrar Billete</button>
@@ -40,25 +40,7 @@
             <th>Anulado</th>
             <th>Acciones</th>
         </tr>
-        @foreach($billetes as $b)
-        <tr>
-            <td>{{ $b->id }}</td>
-            <td>{{ $b->hora }}</td>
-            <td>{{ $b->precio }}</td>
-            <td>{{ $b->anulado ? 'Sí' : 'No' }}</td>
-            <td>
-                @if(!$b->anulado)
-                    <form action="{{ route('anularBilleteR', $b->id) }}" method="post" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit">Anular</button>
-                    </form>
-                @else
-                    —
-                @endif
-            </td>
-        </tr>
-        @endforeach
+       
     </table>
 
 </body>

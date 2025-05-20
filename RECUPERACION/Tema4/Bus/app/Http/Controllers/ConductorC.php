@@ -71,7 +71,7 @@ class ConductorC extends Controller
             
             return view('vistaBilletes', compact('conductor', 'servicio')); //No pasar billetes en el compact proque lo cogemos con el has many
             
-            } catch (\Throwable $th) {
+            } catch (\Throwable $th) { 
             return redirect()->route('inicioR')->with('mensaje', $th->getMessage());
    
     
