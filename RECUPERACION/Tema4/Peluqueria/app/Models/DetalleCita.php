@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Detalle_cita extends Model
+class DetalleCita extends Model
 {
-    function servicios(){
+    function servicio(){
         return $this->belongsTo(Servicio::class);
     }
 

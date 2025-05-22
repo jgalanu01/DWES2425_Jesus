@@ -8,13 +8,17 @@
 </head>
 <body>
 
+    @if (session('info'))
+    <p style="color:green;">{{session('info')}}</p>
+    @endif
+
     @if (session('mensaje'))
     <p style="color:red;">{{session('mensaje')}}</p>
     @endif
 
 
     <h2>Citas</h2>
-    <h3>Crear Cita</h3>
+    <h4>Crear Cita</h4>
 
     <form action="{{route('crearCitaR')}}" method="post">
         @csrf
@@ -29,13 +33,14 @@
     @enderror
     <input type="text" name="cliente" placeholder="Cliente">
     @error('cliente')
+    <p style="color: red">Rellena el cliente</p>
         
     @enderror
     <button type="submit" name="crear">Crear Cita</button>
 
     </form>
 </br>
-    <h2>Citas</h2>
+    <h3>Citas</h3>
 
     <table border=1 width="50%">
 
@@ -58,6 +63,24 @@
             <td>{{$c->hora}}</td>
             <td>{{$c->cliente}}</td>
             <td>{{$c->total}}</td>
+            <form action="{{route('detalleCitaR',$c->id)}}" method="get">
+                @csrf
+                <td><button type="submit" name="detalle">Detalle</button>
+
+                </form>
+
+                <form action="" method="post">
+                    @csrf
+                   <button type="submit" name="borrar">Borrar</button>
+                </form>
+
+                
+
+                
+                </td>
+
+            
+          
 
         </tr>
             
